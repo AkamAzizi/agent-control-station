@@ -79,10 +79,13 @@ pnpm cli benchmark-score --out /tmp/station-benchmark
 ## Development and verification
 
 ```sh
+pnpm format:check
 pnpm typecheck
 pnpm test
 pnpm build
 ```
+
+`pnpm check` runs those four commands together. Pull requests and pushes to `main` run the same gates on GitHub Actions, then `pnpm audit --audit-level=high`. This station is local-only; CI does not deploy.
 
 `pnpm dev` watches the daemon. For UI development, additionally run `pnpm --filter @agent-station/web dev`; Vite proxies `/api` to port 4317.
 
