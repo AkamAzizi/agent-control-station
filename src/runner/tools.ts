@@ -1,4 +1,5 @@
 import type { ContextPacket, Finding, ScopedTools } from '../types.js';
+import { acceptFindings } from './review-result.js';
 export class ContextMissing extends Error {}
 export function scopedTools(
   packet: ContextPacket,
@@ -63,46 +64,5 @@ export function validateFindings(
   packet: ContextPacket,
   previous?: Finding[],
 ): Finding[] {
-  const ids = new Set<string>();
-  for (const f of findings) {
-    if (ids.has(f.id)) throw new Error('Duplicate finding identifier');
-    ids.add(f.id);
-    const location = packet.manifest.items.find(
-      (i) =>
-        i.path !== '__diff__.patch' &&
-        i.path === f.path &&
-        i.side === f.side &&
-        f.startLine >= i.startLine &&
-        f.endLine <= i.endLine,
-    );
-    if (!location) throw new Error(`Finding ${f.id} cites a location outside its snapshot scope`);
-    for (const evidence of f.evidence) {
-      const item = packet.manifest.items.find((i) => i.id === evidence.contextItemId);
-      if (!item || !item.content.includes(evidence.quote))
-        throw new Error(`Finding ${f.id} has ungrounded evidence`);
-    }
-    if (previous) {
-      const original = previous.find((p) => p.id === f.id);
-      if (!original) throw new Error('Verifier invented a finding');
-      if (f.disposition === 'pending' || !f.verification)
-        throw new Error('Verifier must explain a disposition');
-      for (const key of [
-        'title',
-        'body',
-        'severity',
-        'path',
-        'side',
-        'startLine',
-        'endLine',
-        'evidence',
-      ] as const)
-        if (JSON.stringify(f[key]) !== JSON.stringify(original[key]))
-          throw new Error(
-            'Verifier must preserve the original finding and only update its disposition and verification.',
-          );
-    }
-  }
-  if (previous && previous.some((p) => !ids.has(p.id)))
-    throw new Error('Verifier omitted a finding');
-  return findings;
+  return acceptFindings(findings, packet, previous);
 }

@@ -2,8 +2,7 @@
 import { resolve } from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from './server.js';
-import { snapshot } from './repository/index.js';
-import { compile } from './context/index.js';
+import { compileReviewContext } from './compile.js';
 import { Store } from './store.js';
 import { packSchema } from './schemas.js';
 const args = process.argv.slice(2);
@@ -28,28 +27,34 @@ async function main() {
   if (command === 'context') {
     const repo = flag('repo');
     const base = flag('base');
-    const head = flag('head', 'HEAD');
     if (!repo || !base)
       throw new Error('Usage: pnpm cli context --repo PATH --base REF [--head REF] [--out DIR]');
-    const store = new Store(directory);
-    try {
-      const source = await snapshot(resolve(repo), base, head!);
-      const packet = await compile(
-        source,
-        flag('task', 'Review this diff for actionable correctness defects.')!,
-        {},
-        store.packs().filter((p) => p.roles.includes('reviewer')),
-      );
-      const out = flag('out');
-      if (out) {
-        await mkdir(resolve(out), { recursive: true });
-        await writeFile(resolve(out, 'context.json'), JSON.stringify(packet, null, 2));
-        await writeFile(resolve(out, 'context.md'), packet.prompt);
-      } else console.log(JSON.stringify(packet, null, 2));
-      if (packet.status !== 'ready') process.exitCode = 2;
-    } finally {
-      store.close();
-    }
+    const { packet } = await compileReviewContext({
+      repo,
+      base,
+      head: flag('head', 'HEAD'),
+      task: flag('task', 'Review this diff for actionable correctness defects.'),
+      directory,
+    });
+    const out = flag('out');
+    if (out) {
+      await mkdir(resolve(out), { recursive: true });
+      await writeFile(resolve(out, 'context.json'), JSON.stringify(packet, null, 2));
+      await writeFile(resolve(out, 'context.md'), packet.prompt);
+    } else console.log(JSON.stringify(packet, null, 2));
+    if (packet.status !== 'ready') process.exitCode = 2;
+    return;
+  }
+  if (command === 'mcp') {
+    const { serveMcp } = await import('./mcp.js');
+    serveMcp(directory);
+    return;
+  }
+  if (command === 'corpus') {
+    const { materializeCorpus } = await import('./corpus.js');
+    const out = resolve(flag('out', 'corpus')!);
+    const result = await materializeCorpus(out);
+    console.log(`Wrote ${result.dataset.cases.length} seeded cases to ${out}/dataset.json`);
     return;
   }
   if (command === 'pack-import') {
@@ -73,13 +78,14 @@ async function main() {
     const file = flag('dataset');
     if (!file)
       throw new Error(
-        'Usage: pnpm cli benchmark --dataset FILE --provider PROVIDER --model MODEL [--out DIR]',
+        'Usage: pnpm cli benchmark --dataset FILE [--runtime fixture|pi] [--provider PROVIDER --model MODEL] [--out DIR]',
       );
     await benchmark({
       dataset: resolve(file),
       directory: resolve(flag('out', 'benchmark-results')!),
       provider: flag('provider'),
       model: flag('model'),
+      runtime: (flag('runtime', 'pi') as 'pi' | 'fixture') ?? 'pi',
       repeats: Number(flag('repeats', '3')),
       execute: args.includes('--execute'),
     });
@@ -91,7 +97,7 @@ async function main() {
     return;
   }
   console.log(
-    'Commands: serve, context, pack-import, benchmark, benchmark-score. See README.md for options.',
+    'Commands: serve, context, mcp, corpus, pack-import, benchmark, benchmark-score. See README.md for options.',
   );
 }
 main().catch((error) => {

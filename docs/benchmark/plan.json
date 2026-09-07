@@ -1,0 +1,7 @@
+{
+  "cases": 3,
+  "variants": 3,
+  "repeats": 1,
+  "runtime": "fixture",
+  "maxWorkerCalls": 18
+}

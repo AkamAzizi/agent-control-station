@@ -1,0 +1,373 @@
+.review-form-intro {
+  margin-bottom: 12px;
+}
+
+.review-form-intro > .muted,
+.modal-copy {
+  line-height: 1.5;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.github-import {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.github-import label {
+  flex: 1;
+}
+
+.github-import .button {
+  margin-bottom: 0;
+  height: 34px;
+}
+
+.advanced-toggle {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  padding: 12px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.advanced-fields {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.needs-input-panel {
+  margin: 16px 20px 0;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--warn-soft);
+}
+
+.needs-input-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.needs-input-copy strong {
+  color: var(--ink);
+  font-size: 14px;
+  letter-spacing: -0.015em;
+}
+
+.needs-input-copy span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.needs-input-fields {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 9px;
+  align-items: end;
+  margin-top: 12px;
+}
+
+.needs-input-fields label {
+  min-width: 0;
+}
+
+.needs-input-fields .button {
+  height: 34px;
+}
+
+.pack-rules-field {
+  grid-column: span 2;
+}
+
+.pack-rules-field textarea {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.form-error {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 590;
+}
+
+.modal label {
+  margin-top: 12px;
+}
+
+input,
+textarea,
+select {
+  display: block;
+  width: 100%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  font-size: 13px;
+  margin-top: 6px;
+  outline: 0;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.45;
+  min-height: 76px;
+}
+
+select {
+  appearance: auto;
+}
+
+.modal {
+  width: min(440px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--surface);
+  backdrop-filter: var(--vibrancy);
+  -webkit-backdrop-filter: var(--vibrancy);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sheet);
+  padding: 18px 18px 16px;
+  animation: sheet-in var(--spring);
+}
+
+.modal.wide {
+  width: min(620px, 100%);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 4px;
+}
+
+.modal-head h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.runtime-picker {
+  margin-top: 14px;
+}
+
+.runtime-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.runtime-options button {
+  border: 0.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 11px;
+  text-align: left;
+}
+
+.runtime-options button:active {
+  transform: scale(0.98);
+  transition: var(--press);
+}
+
+.runtime-options button svg {
+  margin-top: 2px;
+}
+
+.runtime-options button span {
+  display: grid;
+  gap: 3px;
+}
+
+.runtime-options strong {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 590;
+}
+
+.runtime-options small {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.runtime-options button.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: 0 0 0 0.5px var(--accent);
+}
+
+.runtime-options button.selected strong {
+  color: var(--accent);
+}
+
+.notice {
+  position: fixed;
+  z-index: 60;
+  top: 64px;
+  right: 18px;
+  max-width: 360px;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  backdrop-filter: var(--vibrancy);
+  -webkit-backdrop-filter: var(--vibrancy);
+  box-shadow: var(--shadow-sheet);
+  color: var(--ink);
+  font-size: 13px;
+  animation: sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.notice.error {
+  color: var(--danger);
+}
+
+.notice.success {
+  color: var(--ok);
+}
+
+.notice button {
+  margin-left: auto;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  display: grid;
+  padding: 0;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 20px 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.error-banner span {
+  flex: 1;
+}
+
+.error-banner strong {
+  color: var(--danger);
+}
+
+.partial-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 20px 14px;
+  color: var(--warn);
+  background: var(--warn-soft);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.partial-banner div {
+  display: grid;
+  gap: 2px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes inspector-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

@@ -43,6 +43,11 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Seeded corpus fixture benchmark
+        run: |
+          pnpm cli corpus --out "$RUNNER_TEMP/station-corpus"
+          pnpm cli benchmark --dataset "$RUNNER_TEMP/station-corpus/dataset.json" --runtime fixture --repeats 1 --execute --out "$RUNNER_TEMP/station-bench"
+
       - name: Build
         run: pnpm build
 

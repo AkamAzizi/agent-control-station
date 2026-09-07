@@ -27,4 +27,10 @@ Use relative `/api` paths, same origin. JSON errors: `{error:string}`. No fake c
 - GET `/api/events` SSE `event: station`, JSON RunEvent, durable numeric ID; replay Last-Event-ID
 - POST `/api/github/import` `{repoId,url}` → `{base:string,head:string,title:string}`; optional installed gh, read-only GitHub, fetches only local Git objects
 
+`pnpm cli mcp` exposes `compile_review_context` over MCP stdio (Content-Length JSON-RPC). Cursor/Claude Code can request a scoped packet without a model call.
+
+`pnpm cli corpus --out DIR` writes three original seeded-defect Git repositories plus `dataset.json`. Labels include `path` and `quote` so fixture scoring can auto-assess blinded `*.assessment.json` files.
+
+`STATION_CASSETTE=record|replay` and `STATION_CASSETTE_FILE` wrap provider `fetch` in the Pi worker. Replay refuses unmatched live HTTP.
+
 Tests use node:test via `tsx --test test/*.test.ts` and exercise behavior through public interfaces. The Pi adapter runs in a child process with a controlled ResourceLoader and an explicit read-only tool allowlist. Child tool requests are enforced and recorded in the daemon; disconnecting the daemon stops the child.
