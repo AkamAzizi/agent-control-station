@@ -1,0 +1,5 @@
+#!/bin/sh
+# Strip Cursor/agent attribution that wrappers inject into commit messages.
+file="$1"
+[ -n "$file" ] && [ -f "$file" ] || exit 0
+perl -i -ne 'print unless /cursoragent@cursor\.com/ or /^Made with Cursor/ or /^Made-with:\s*Cursor/' "$file"
