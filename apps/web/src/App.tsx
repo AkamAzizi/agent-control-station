@@ -162,6 +162,10 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+function labelize(value: string) {
+  return value.replace(/_/g, ' ').replace(/^\w/, (char) => char.toUpperCase());
+}
+
 function EmptyState({
   onDemo,
   onNew,
@@ -174,20 +178,18 @@ function EmptyState({
   return (
     <div className="empty-state">
       <div className="empty-mark">
-        <Sparkles size={21} />
+        <Sparkles size={22} />
       </div>
-      <p className="eyebrow">Ready when you are</p>
-      <h2>Start a local review</h2>
+      <h2>No reviews yet</h2>
       <p className="muted copy">
-        Register a repository, then compare two refs with a task in plain language. Run history and
-        captured context stay local; a Pi worker sends only the selected review context to its
-        configured provider.
+        Register a repository, then compare two refs with a task in plain language. History stays on
+        this machine.
       </p>
       <div className="empty-actions">
-        <button className="button primary" onClick={onNew}>
-          <Plus size={16} /> New review
+        <button type="button" className="button primary" onClick={onNew}>
+          <Plus size={15} /> New review
         </button>
-        <button className="button secondary" disabled={demoBusy} onClick={onDemo}>
+        <button type="button" className="button secondary" disabled={demoBusy} onClick={onDemo}>
           {demoBusy ? <LoaderCircle size={15} className="spin" /> : <Play size={15} />}{' '}
           {demoBusy ? 'Starting…' : 'Try demo'}
         </button>
@@ -304,6 +306,15 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
+  useEffect(() => {
+    if (!mobileNav) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileNav(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileNav]);
+
   const selectedRun = useMemo(() => {
     if (!station || !selectedRunId) return detail?.run ?? null;
     return station.runs.find((run) => run.id === selectedRunId) ?? detail?.run ?? null;
@@ -395,19 +406,37 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <button
+          type="button"
           className="mobile-menu button icon-button"
           aria-label="Open navigation"
+          aria-expanded={mobileNav}
+          aria-controls="station-rail"
           onClick={() => setMobileNav(true)}
         >
           <Menu size={18} />
         </button>
         <div className="brand">
-          <span className="brand-glyph">
-            <Code2 size={17} />
+          <span className="brand-glyph" aria-hidden="true">
+            <Code2 size={13} />
           </span>
-          <span>Agent Control Station</span>
+          <span>Station</span>
         </div>
         <div className="topbar-spacer" />
+        <div className="heading-actions toolbar-actions">
+          <button type="button" className="button secondary" onClick={() => void loadState()}>
+            <RefreshCw size={14} /> Refresh
+          </button>
+          <button
+            type="button"
+            className="button primary"
+            onClick={() => {
+              setReviewRepoId(undefined);
+              setShowReviewForm(true);
+            }}
+          >
+            <Plus size={15} /> New review
+          </button>
+        </div>
         <div
           className={`connection ${stateError || sseStatus === 'offline' ? 'offline' : sseStatus === 'connecting' ? 'connecting' : 'online'}`}
         >
@@ -424,10 +453,19 @@ function App() {
       </header>
 
       <div className="app-body">
-        <aside className={`rail ${mobileNav ? 'mobile-open' : ''}`}>
+        {mobileNav && (
+          <button
+            type="button"
+            className="rail-scrim"
+            aria-label="Close navigation"
+            onClick={() => setMobileNav(false)}
+          />
+        )}
+        <aside id="station-rail" className={`rail ${mobileNav ? 'mobile-open' : ''}`}>
           <div className="mobile-rail-head">
-            <span className="eyebrow">Navigation</span>
+            <span className="eyebrow">Navigate</span>
             <button
+              type="button"
               className="button icon-button"
               onClick={() => setMobileNav(false)}
               aria-label="Close navigation"
@@ -437,17 +475,21 @@ function App() {
           </div>
           <nav className="primary-nav" aria-label="Primary navigation">
             <button
+              type="button"
               className={`nav-item ${view === 'workspace' ? 'active' : ''}`}
+              aria-current={view === 'workspace' ? 'page' : undefined}
               onClick={() => {
                 setView('workspace');
                 setMobileNav(false);
               }}
             >
-              <PanelLeft size={16} /> Workspace{' '}
+              <PanelLeft size={16} /> Reviews{' '}
               <span className="nav-count">{station?.runs.length ?? 0}</span>
             </button>
             <button
+              type="button"
               className={`nav-item ${view === 'repositories' ? 'active' : ''}`}
+              aria-current={view === 'repositories' ? 'page' : undefined}
               onClick={() => {
                 setView('repositories');
                 setMobileNav(false);
@@ -456,13 +498,15 @@ function App() {
               <FolderGit2 size={16} /> Repositories
             </button>
             <button
+              type="button"
               className={`nav-item ${view === 'packs' ? 'active' : ''}`}
+              aria-current={view === 'packs' ? 'page' : undefined}
               onClick={() => {
                 setView('packs');
                 setMobileNav(false);
               }}
             >
-              <Layers3 size={16} /> Judgment packs{' '}
+              <Layers3 size={16} /> Packs{' '}
               <span className="nav-count">{station?.packs.length ?? 0}</span>
             </button>
           </nav>
@@ -470,6 +514,7 @@ function App() {
           <div className="rail-section-head">
             <span>Repositories</span>
             <button
+              type="button"
               className="button icon-button tiny"
               aria-label="Register repository"
               onClick={() => setShowRepoForm(true)}
@@ -481,6 +526,7 @@ function App() {
             {station?.repos.length ? (
               station.repos.map((repo) => (
                 <button
+                  type="button"
                   className="repo-item"
                   key={repo.id}
                   onClick={() => {
@@ -504,7 +550,7 @@ function App() {
           </div>
           <div className="rail-footer">
             <span className="tiny-logo">◎</span>
-            <span>Local-first station</span>
+            <span>On this Mac</span>
           </div>
         </aside>
 
@@ -563,7 +609,6 @@ function App() {
               onDemo={() => void tryDemo()}
               actionBusy={actionBusy}
               onAction={runAction}
-              onRefresh={() => void loadState()}
               setNotice={setNotice}
               onAdjusted={startAdjustedReview}
               onDraftPack={draftPack}
@@ -618,7 +663,6 @@ function WorkspaceView({
   onDemo,
   actionBusy,
   onAction,
-  onRefresh,
   setNotice,
   onAdjusted,
   onDraftPack,
@@ -636,7 +680,6 @@ function WorkspaceView({
   onDemo: () => void;
   actionBusy: 'demo' | 'run-action' | 'adjust' | 'draft' | null;
   onAction: (action: 'cancel' | 'retry') => void;
-  onRefresh: () => void;
   setNotice: (notice: Notice) => void;
   onAdjusted: (request: ReviewRequest) => Promise<void>;
   onDraftPack: (findingId: string) => Promise<void>;
@@ -644,20 +687,6 @@ function WorkspaceView({
 }) {
   return (
     <div className="workspace-view">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">Workspace</p>
-          <h1>Review runs</h1>
-        </div>
-        <div className="heading-actions">
-          <button className="button secondary" onClick={onRefresh}>
-            <RefreshCw size={15} /> Refresh
-          </button>
-          <button className="button primary" onClick={onNew}>
-            <Plus size={16} /> New review
-          </button>
-        </div>
-      </div>
       {loading && !station ? (
         <LoadingState />
       ) : station?.runs.length ? (
@@ -714,9 +743,19 @@ function WorkspaceView({
 
 function LoadingState() {
   return (
-    <div className="loading-state">
-      <LoaderCircle className="spin" size={20} />
-      <span>Connecting to local station…</span>
+    <div className="loading-state" aria-busy="true" aria-label="Connecting to local station">
+      <div className="skeleton-split">
+        <div className="skeleton-col">
+          {Array.from({ length: 6 }, (_, index) => (
+            <div className="skeleton-row" key={index} />
+          ))}
+        </div>
+        <div className="skeleton-detail">
+          <div className="skeleton-line wide" />
+          <div className="skeleton-line" />
+          <div className="skeleton-line short" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -731,7 +770,7 @@ function RunListItem({
   onClick: () => void;
 }) {
   return (
-    <button className={`run-item ${selected ? 'selected' : ''}`} onClick={onClick}>
+    <button type="button" className={`run-item ${selected ? 'selected' : ''}`} onClick={onClick}>
       <div className="run-item-top">
         <span className="run-title truncate">
           {run.title || run.request.task || 'Untitled review'}
@@ -792,7 +831,7 @@ function RunWorkspace({
       <div className="run-heading">
         <div className="run-heading-main">
           <div className="back-label">
-            <span className="live-mark" /> Review run
+            <span className="live-mark" /> Review
           </div>
           <h2>{run.title || run.request.task || 'Untitled review'}</h2>
           <div className="run-subline">
@@ -935,6 +974,7 @@ function TabButton({
 }) {
   return (
     <button
+      type="button"
       role="tab"
       aria-selected={tab === current}
       className={`tab ${tab === current ? 'active' : ''}`}
@@ -953,7 +993,7 @@ function PlanStrip({ run }: { run: Run }) {
       <div className="strip-title">Plan</div>
       {run.nodes.map((node, index) => (
         <div
-          className={`plan-node ${STATUS_TONES[node.status === 'skipped' ? 'cancelled' : node.status]}`}
+          className={`plan-node ${node.status === 'skipped' ? 'skipped' : STATUS_TONES[node.status]}`}
           key={`${node.name}-${index}`}
         >
           <div className="plan-node-line">
@@ -993,21 +1033,21 @@ function FindingsTab({
     <div className="findings-tab">
       <div className="tab-intro">
         <div>
-          <p className="eyebrow">Review output</p>
           <h3>
             {run.findings.length
-              ? `${run.findings.length} finding${run.findings.length === 1 ? '' : 's'} to inspect`
+              ? `${run.findings.length} finding${run.findings.length === 1 ? '' : 's'}`
               : 'No findings yet'}
           </h3>
         </div>
         <div className="filter-group" aria-label="Filter findings">
           {(['all', 'pending', 'supported', 'uncertain', 'rejected'] as const).map((value) => (
             <button
+              type="button"
               key={value}
               className={filter === value ? 'active' : ''}
               onClick={() => setFilter(value)}
             >
-              {value === 'all' ? 'All' : value}
+              {labelize(value)}
             </button>
           ))}
         </div>
@@ -1190,8 +1230,8 @@ function ContextTab({ context }: { context: ContextPacket | null }) {
     <div className="context-tab">
       <div className="context-summary">
         <div>
-          <p className="eyebrow">Context manifest v{context.manifest.version}</p>
-          <h3>{context.manifest.items.length} excerpts selected</h3>
+          <p className="eyebrow">Manifest v{context.manifest.version}</p>
+          <h3>{context.manifest.items.length} excerpts</h3>
           <p className="muted">
             Compiler {context.manifest.compilerVersion} · {formatBytes(context.byteLength)} · ~
             {context.estimatedTokens.toLocaleString()} tokens
@@ -1248,7 +1288,11 @@ function ContextTab({ context }: { context: ContextPacket | null }) {
               {item.startLine}–{item.endLine}
             </span>
             <span className="reason-truncate">{item.reason}</span>
-            <button className="text-button why-button" onClick={() => setSelected(item)}>
+            <button
+              type="button"
+              className="text-button why-button"
+              onClick={() => setSelected(item)}
+            >
               Why this file? <ChevronRight size={13} />
             </button>
           </div>
@@ -1265,10 +1309,11 @@ function ContextDrawer({ item, onClose }: { item: ContextItem; onClose: () => vo
       <aside className="context-drawer" onClick={(event) => event.stopPropagation()}>
         <div className="drawer-head">
           <div>
-            <p className="eyebrow">Context rationale</p>
+            <p className="eyebrow">Why this file</p>
             <h3>{item.path}</h3>
           </div>
           <button
+            type="button"
             className="button icon-button"
             onClick={onClose}
             aria-label="Close context details"
@@ -1406,7 +1451,7 @@ function ContextAdjustForm({
   return (
     <form className="needs-input-panel" onSubmit={submit}>
       <div className="needs-input-copy">
-        <div className="eyebrow">Context needs input</div>
+        <div className="eyebrow">Needs a narrower pass</div>
         <strong>Narrow the scope or raise the context budget</strong>
         <span>
           The first pass could not fit the required context. This starts a new run with the same
@@ -1487,12 +1532,11 @@ function RepositoriesView({
     <div className="simple-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Local sources</p>
           <h1>Repositories</h1>
         </div>
         <div className="heading-actions">
-          <button className="button primary" onClick={onRegister}>
-            <Plus size={16} /> Register repository
+          <button type="button" className="button primary" onClick={onRegister}>
+            <Plus size={15} /> Register repository
           </button>
         </div>
       </div>
@@ -1567,12 +1611,11 @@ function PacksView({
     <div className="simple-page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Review policy</p>
           <h1>Judgment packs</h1>
         </div>
         <div className="heading-actions">
-          <button className="button primary" onClick={openNew}>
-            <Plus size={16} /> New version
+          <button type="button" className="button primary" onClick={openNew}>
+            <Plus size={15} /> New version
           </button>
         </div>
       </div>
@@ -1631,10 +1674,11 @@ function PackCard({
           <p className="mono muted">{pack.id}</p>
         </div>
         <div className="pack-card-actions">
-          <button className="button secondary compact" onClick={onEdit}>
+          <button type="button" className="button secondary compact" onClick={onEdit}>
             <FileCode2 size={13} /> Edit v{pack.version + 1}
           </button>
           <button
+            type="button"
             className={`toggle ${pack.active ? 'on' : ''}`}
             onClick={onToggle}
             aria-label={`${pack.active ? 'Deactivate' : 'Activate'} ${pack.name}`}
@@ -1654,7 +1698,6 @@ function PackCard({
       </div>
       {pack.rules.length > 0 && (
         <div className="pack-rule-preview">
-          <span className="rule-index">01</span>
           <span>{pack.rules[0].text}</span>
         </div>
       )}
@@ -1715,7 +1758,7 @@ function PackForm({
     <form className="pack-form" onSubmit={submit}>
       <div className="form-heading">
         <div>
-          <p className="eyebrow">Immutable version {initial ? `v${initial.version}` : 'v1'}</p>
+          <p className="eyebrow">Version {initial ? `v${initial.version}` : 'v1'}</p>
           <h3>{initial ? `Edit ${initial.name}` : 'Create a judgment pack'}</h3>
         </div>
         <button type="button" className="button icon-button" onClick={onCancel} aria-label="Close">
