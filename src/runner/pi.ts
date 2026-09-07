@@ -28,6 +28,8 @@ export function workerEnvironment(directory: string): NodeJS.ProcessEnv {
     'MISTRAL_API_KEY',
     'GROQ_API_KEY',
     'XAI_API_KEY',
+    'STATION_CASSETTE',
+    'STATION_CASSETTE_FILE',
   ])
     if (process.env[key]) result[key] = process.env[key];
   return result;

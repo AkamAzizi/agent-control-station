@@ -15,7 +15,8 @@ import {
   type Finding,
 } from './types.js';
 import { requestSchema, resultSchema } from './schemas.js';
-import { ContextMissing, scopedTools, validateFindings } from './runner/tools.js';
+import { ContextMissing, scopedTools } from './runner/tools.js';
+import { acceptFindings } from './runner/review-result.js';
 import { ScriptedRunner } from './runner/scripted.js';
 import { PiRunner } from './runner/pi.js';
 
@@ -239,7 +240,7 @@ export class Orchestrator {
           if (event.type === 'result') {
             flushText();
             const parsed = resultSchema.parse(event);
-            result = validateFindings(
+            result = acceptFindings(
               parsed.findings,
               context,
               role === 'verifier' ? findings : undefined,

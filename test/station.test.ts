@@ -82,15 +82,15 @@ test('finding evidence must exist at the claimed immutable location', () => {
     disposition: 'pending' as const,
   };
   assert.equal(validateFindings([finding], packet).length, 1);
-  assert.throws(() => validateFindings([{ ...finding, path: 'other.ts' }], packet), /outside/);
-  assert.throws(
-    () =>
-      validateFindings(
-        [{ ...finding, evidence: [{ contextItemId: 'allowed', quote: 'invented' }] }],
-        packet,
-      ),
-    /ungrounded/,
+  const offScope = validateFindings([{ ...finding, path: 'other.ts' }], packet);
+  assert.equal(offScope[0].disposition, 'rejected');
+  assert.match(offScope[0].verification ?? '', /outside/);
+  const ungrounded = validateFindings(
+    [{ ...finding, evidence: [{ contextItemId: 'allowed', quote: 'invented' }] }],
+    packet,
   );
+  assert.equal(ungrounded[0].disposition, 'rejected');
+  assert.match(ungrounded[0].verification ?? '', /exact substring/);
 });
 
 test('operator completes a demo, inspects provenance, gives feedback, exports and reopens it', async () => {
@@ -287,6 +287,85 @@ test('daemon recovery marks an unfinished attempt interrupted and preserves its 
     assert.ok(store.events(0, run.id).some((e) => e.type === 'run.interrupted'));
     const last = store.events().at(-1)!.id;
     assert.deepEqual(store.events(last), []);
+  } finally {
+    await orchestration.close();
+    store.close();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('bad citations reject that finding and still complete the run', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'station-soft-fail-'));
+  const demo = await createDemo(dir);
+  const store = new Store(dir);
+  const runner: Runner = {
+    async *run(spec): AsyncIterable<WorkerEvent> {
+      if (spec.role === 'verifier') {
+        yield {
+          type: 'result',
+          findings: spec.findings.map((finding) => ({
+            ...finding,
+            disposition: finding.disposition === 'rejected' ? 'rejected' : 'supported',
+            verification: finding.verification ?? 'Checked captured excerpt.',
+          })),
+        };
+        return;
+      }
+      const item = spec.packet.manifest.items.find(
+        (candidate) => candidate.path !== '__diff__.patch' && candidate.side === 'head',
+      )!;
+      yield {
+        type: 'result',
+        findings: [
+          {
+            id: 'grounded',
+            title: 'Negative quantities pass validation',
+            body: 'The equality check accepts negative quantities.',
+            severity: 'high',
+            path: item.path,
+            side: 'head',
+            startLine: item.startLine,
+            endLine: item.startLine,
+            evidence: [{ contextItemId: item.id, quote: 'quantity === 0' }],
+            disposition: 'pending',
+          },
+          {
+            id: 'invented',
+            title: 'Invented quote',
+            body: 'This citation is not in the packet.',
+            severity: 'low',
+            path: item.path,
+            side: 'head',
+            startLine: item.startLine,
+            endLine: item.startLine,
+            evidence: [{ contextItemId: item.id, quote: 'this-quote-is-not-in-the-source' }],
+            disposition: 'pending',
+          },
+        ],
+      };
+    },
+  };
+  const orchestration = new Orchestrator(store, { runner });
+  try {
+    const repo = await orchestration.register(demo.path);
+    const run = orchestration.start({
+      repoId: repo.id,
+      base: demo.base,
+      head: demo.head,
+      task: 'Review',
+      runtime: 'scripted',
+    });
+    await orchestration.idle();
+    const completed = store.run(run.id);
+    assert.equal(completed.status, 'completed', completed.error);
+    assert.equal(
+      completed.findings.find((finding) => finding.id === 'grounded')?.disposition,
+      'supported',
+    );
+    assert.equal(
+      completed.findings.find((finding) => finding.id === 'invented')?.disposition,
+      'rejected',
+    );
   } finally {
     await orchestration.close();
     store.close();
