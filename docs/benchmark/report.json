@@ -1,0 +1,45 @@
+{
+  "status": "assessed",
+  "note": "Exploration tokens are byte/4 estimates. Seeded path+quote labels can be auto-assessed; otherwise humans set blinded *.assessment.json verdicts. A small corpus is not a general model-quality claim.",
+  "summaries": [
+    {
+      "variant": "baseline",
+      "runs": 3,
+      "failures": 0,
+      "unassessed": 0,
+      "precision": 1,
+      "recall": 1,
+      "medianExplorationBytes": 450,
+      "medianEstimatedExplorationTokens": 113,
+      "medianTotalTokens": 0,
+      "medianTotalMs": 5.6920410000000174,
+      "medianCompileMs": 5.15604200000007
+    },
+    {
+      "variant": "context",
+      "runs": 3,
+      "failures": 0,
+      "unassessed": 0,
+      "precision": 1,
+      "recall": 1,
+      "medianExplorationBytes": 290,
+      "medianEstimatedExplorationTokens": 73,
+      "medianTotalTokens": 0,
+      "medianTotalMs": 1.5408749999999145,
+      "medianCompileMs": 1.1760420000000522
+    },
+    {
+      "variant": "packs",
+      "runs": 3,
+      "failures": 0,
+      "unassessed": 0,
+      "precision": 1,
+      "recall": 1,
+      "medianExplorationBytes": 290,
+      "medianEstimatedExplorationTokens": 73,
+      "medianTotalTokens": 0,
+      "medianTotalMs": 2.688250000000039,
+      "medianCompileMs": 1.017417000000023
+    }
+  ]
+}

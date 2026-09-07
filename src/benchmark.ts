@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { snapshot } from './repository/index.js';
 import { compile } from './context/index.js';
@@ -12,9 +12,13 @@ import {
   type Snapshot,
   type Finding,
   type Usage,
+  type Runner,
 } from './types.js';
 import { PiRunner } from './runner/pi.js';
-import { scopedTools, validateFindings } from './runner/tools.js';
+import { FixtureRunner } from './runner/fixture.js';
+import { scopedTools } from './runner/tools.js';
+import { acceptFindings } from './runner/review-result.js';
+import { renderBenchmarkGraph } from './benchmark-graph.js';
 
 const datasetSchema = z.object({
   cases: z
@@ -25,7 +29,14 @@ const datasetSchema = z.object({
         base: z.string(),
         head: z.string(),
         task: z.string(),
-        labels: z.array(z.object({ id: z.string(), description: z.string() })),
+        labels: z.array(
+          z.object({
+            id: z.string(),
+            description: z.string(),
+            path: z.string().optional(),
+            quote: z.string().optional(),
+          }),
+        ),
         packs: z.array(packSchema).default([]),
       }),
     )
@@ -84,11 +95,58 @@ export function baselinePacket(source: Snapshot, reference: ContextPacket): Cont
   };
 }
 
+export function assessAgainstLabels(
+  findings: Finding[],
+  labels: { id: string; description: string; path?: string; quote?: string }[],
+) {
+  const seeded = labels.some((label) => label.path || label.quote);
+  const used = new Set<string>();
+  return findings
+    .filter((finding) => finding.disposition === 'supported')
+    .map((finding) => {
+      const match = labels.find((label) => {
+        if (used.has(label.id)) return false;
+        if (label.path && label.path !== finding.path) return false;
+        if (
+          label.quote &&
+          !finding.evidence.some(
+            (evidence) =>
+              evidence.quote.includes(label.quote!) || label.quote!.includes(evidence.quote),
+          )
+        )
+          return false;
+        return Boolean(label.path || label.quote);
+      });
+      if (match) {
+        used.add(match.id);
+        return {
+          findingId: finding.id,
+          title: finding.title,
+          body: finding.body,
+          path: finding.path,
+          startLine: finding.startLine,
+          matchedLabelId: match.id,
+          verdict: 'accepted' as const,
+        };
+      }
+      return {
+        findingId: finding.id,
+        title: finding.title,
+        body: finding.body,
+        path: finding.path,
+        startLine: finding.startLine,
+        matchedLabelId: null,
+        verdict: seeded ? ('rejected' as const) : ('unassessed' as const),
+      };
+    });
+}
+
 export async function benchmark(options: {
   dataset: string;
   directory: string;
   provider?: string;
   model?: string;
+  runtime?: 'pi' | 'fixture';
   repeats: number;
   execute: boolean;
 }) {
@@ -100,10 +158,12 @@ export async function benchmark(options: {
       throw new Error(`Duplicate labels in ${sample.id}`);
   if (!Number.isInteger(options.repeats) || options.repeats < 1 || options.repeats > 10)
     throw new Error('Repeats must be 1–10');
+  const runtime = options.runtime ?? 'pi';
   const plan = {
     cases: dataset.cases.length,
     variants: 3,
     repeats: options.repeats,
+    runtime,
     maxWorkerCalls: dataset.cases.length * 3 * options.repeats * 2,
     provider: options.provider,
     model: options.model,
@@ -114,7 +174,10 @@ export async function benchmark(options: {
         {
           ...plan,
           status: 'dry-run',
-          next: 'Add --execute to make paid model calls. Use disjoint pack-training and evaluation cases.',
+          next:
+            runtime === 'fixture'
+              ? 'Add --execute to run the fixture reviewer on the seeded corpus (no model calls).'
+              : 'Add --execute to make paid model calls. Use disjoint pack-training and evaluation cases.',
         },
         null,
         2,
@@ -122,15 +185,17 @@ export async function benchmark(options: {
     );
     return;
   }
-  if (!options.provider || !options.model)
-    throw new Error('Explicit --provider and --model are required.');
+  if (runtime === 'pi' && (!options.provider || !options.model))
+    throw new Error('Explicit --provider and --model are required for Pi.');
   await mkdir(options.directory, { recursive: true });
   if ((await readdir(options.directory)).length)
     throw new Error('Output directory must be empty; choose a new directory.');
   await writeFile(join(options.directory, 'plan.json'), JSON.stringify(plan, null, 2));
-  const runner = new PiRunner(options.directory);
+  const runner: Runner =
+    runtime === 'fixture' ? new FixtureRunner() : new PiRunner(options.directory);
+  const root = dirname(options.dataset);
   for (const sample of dataset.cases) {
-    const source = await snapshot(resolve(sample.repoPath), sample.base, sample.head);
+    const source = await snapshot(resolve(root, sample.repoPath), sample.base, sample.head);
     for (let repeat = 1; repeat <= options.repeats; repeat++)
       for (const variant of ['baseline', 'context', 'packs'] as const) {
         const start = performance.now();
@@ -190,7 +255,7 @@ export async function benchmark(options: {
                   base: source.mergeBase,
                   head: source.head,
                   task: sample.task,
-                  runtime: 'pi',
+                  runtime: runtime === 'fixture' ? 'scripted' : 'pi',
                   provider: options.provider,
                   model: options.model,
                 },
@@ -208,12 +273,11 @@ export async function benchmark(options: {
               }
               if (event.type === 'result') {
                 const value = resultSchema.parse(event);
-                validateFindings(
+                result.findings = acceptFindings(
                   value.findings,
                   packet,
                   role === 'verifier' ? result.findings : undefined,
                 );
-                result.findings = value.findings;
                 completed = true;
                 if (value.incomplete) throw new Error(value.incomplete);
               }
@@ -232,7 +296,7 @@ export async function benchmark(options: {
           join(options.directory, `${result.id}.trace.json`),
           JSON.stringify(traces, null, 2),
         );
-        // Blind labels omit variant/runtime and retain code references for human adjudication.
+        // Blind files omit variant/runtime. Seeded labels with path+quote are auto-assessed.
         await writeFile(
           join(options.directory, `${result.id}.assessment.json`),
           JSON.stringify(
@@ -240,17 +304,7 @@ export async function benchmark(options: {
               id: result.id,
               caseId: sample.id,
               expected: sample.labels,
-              findings: result.findings
-                .filter((f) => f.disposition === 'supported')
-                .map((f) => ({
-                  findingId: f.id,
-                  title: f.title,
-                  body: f.body,
-                  path: f.path,
-                  startLine: f.startLine,
-                  matchedLabelId: null,
-                  verdict: 'unassessed',
-                })),
+              findings: assessAgainstLabels(result.findings, sample.labels),
             },
             null,
             2,
@@ -328,10 +382,11 @@ export async function scoreBenchmark(directory: string) {
     status: summaries.some((s) => s.unassessed || s.failures || !s.runs)
       ? 'incomplete'
       : 'assessed',
-    note: 'Exploration tokens are byte/4 estimates. Human assessments determine precision and recall. A small pilot is not a general performance claim.',
+    note: 'Exploration tokens are byte/4 estimates. Seeded path+quote labels can be auto-assessed; otherwise humans set blinded *.assessment.json verdicts. A small corpus is not a general model-quality claim.',
     summaries,
   };
   await writeFile(join(directory, 'report.json'), JSON.stringify(report, null, 2));
+  await writeFile(join(directory, 'report.svg'), renderBenchmarkGraph(report));
   console.log(JSON.stringify(report, null, 2));
   return report;
 }
