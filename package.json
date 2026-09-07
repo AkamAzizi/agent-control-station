@@ -14,7 +14,7 @@
     "build": "tsc --noEmit && pnpm --filter @agent-station/web build",
     "typecheck": "tsc --noEmit && pnpm --filter @agent-station/web typecheck",
     "test": "tsx --test test/*.test.ts",
-    "check": "pnpm typecheck && pnpm test && pnpm build",
+    "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
     "format": "prettier --write src apps/web/src test docs README.md",
     "format:check": "prettier --check src apps/web/src test docs README.md"
   },
