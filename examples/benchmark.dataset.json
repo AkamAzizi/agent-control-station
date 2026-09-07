@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {
+      "id": "replace-with-held-out-pr",
+      "repoPath": "/absolute/path/to/pilot-repository",
+      "base": "REPLACE_WITH_BASE_COMMIT",
+      "head": "REPLACE_WITH_HEAD_COMMIT",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        { "id": "defect-1", "description": "Replace with an independently identified defect and its concrete triggering case." }
+      ],
+      "packs": []
+    }
+  ]
+}
