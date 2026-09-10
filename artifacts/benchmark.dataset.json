@@ -1,0 +1,793 @@
+{
+  "cases": [
+    {
+      "id": "axios-axios-clean-18e7dfed",
+      "repoPath": "repos/axios-axios",
+      "base": "1226e6c53eeb0e9d7159bea83556c2ff117b5f2e",
+      "head": "18e7dfedf30c96e58652887f930642ae82e0130c",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-10T10:25:53+02:00",
+      "sourceRepository": "axios/axios",
+      "cloneUrl": "https://github.com/axios/axios.git",
+      "sourceCommit": "18e7dfedf30c96e58652887f930642ae82e0130c"
+    },
+    {
+      "id": "axios-axios-clean-9ecb985a",
+      "repoPath": "repos/axios-axios",
+      "base": "d1f060dddebb9353c269c32ca4f8334492ca252c",
+      "head": "9ecb985a6eaa6d31d8e133f5b3b46278cb77a4b6",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-09T14:12:53+02:00",
+      "sourceRepository": "axios/axios",
+      "cloneUrl": "https://github.com/axios/axios.git",
+      "sourceCommit": "9ecb985a6eaa6d31d8e133f5b3b46278cb77a4b6"
+    },
+    {
+      "id": "axios-axios-defect-d8165e9f",
+      "repoPath": "repos/axios-axios",
+      "base": "fba7fcc44ee808af5cef423d07b0d81cbfce1502",
+      "head": "e5540dcafe423909527c0af097fb6ae7f68c08f3",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-helpers-estimatedataurldecodedbytes-js-1",
+          "description": "A later bug-fix replaced this line in lib/helpers/estimateDataURLDecodedBytes.js.",
+          "path": "lib/helpers/estimateDataURLDecodedBytes.js",
+          "quote": "if (typeof TextEncoder === 'function') {"
+        },
+        {
+          "id": "lib-helpers-estimatedataurldecodedbytes-js-2",
+          "description": "A later bug-fix replaced this line in lib/helpers/estimateDataURLDecodedBytes.js.",
+          "path": "lib/helpers/estimateDataURLDecodedBytes.js",
+          "quote": "return new TextEncoder().encode(body).byteLength;"
+        },
+        {
+          "id": "lib-helpers-estimatedataurldecodedbytes-js-3",
+          "description": "A later bug-fix replaced this line in lib/helpers/estimateDataURLDecodedBytes.js.",
+          "path": "lib/helpers/estimateDataURLDecodedBytes.js",
+          "quote": "return body.length;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-04-22T19:41:11+02:00",
+      "sourceRepository": "axios/axios",
+      "cloneUrl": "https://github.com/axios/axios.git",
+      "sourceCommit": "d8165e9f2c4a73176a372d5d84f43c5fd166026b"
+    },
+    {
+      "id": "colinhacks-zod-clean-661673ae",
+      "repoPath": "repos/colinhacks-zod",
+      "base": "6de10dce1afaba7160d1c7ca810cc40bc4a7a733",
+      "head": "661673ae3ed42b15e8f835ae1bd0223b1db044a4",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-09T10:16:08-07:00",
+      "sourceRepository": "colinhacks/zod",
+      "cloneUrl": "https://github.com/colinhacks/zod.git",
+      "sourceCommit": "661673ae3ed42b15e8f835ae1bd0223b1db044a4"
+    },
+    {
+      "id": "colinhacks-zod-clean-6de10dce",
+      "repoPath": "repos/colinhacks-zod",
+      "base": "213ee75d2ad6e41508587c3fab8246967f006993",
+      "head": "6de10dce1afaba7160d1c7ca810cc40bc4a7a733",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-09T10:08:22-07:00",
+      "sourceRepository": "colinhacks/zod",
+      "cloneUrl": "https://github.com/colinhacks/zod.git",
+      "sourceCommit": "6de10dce1afaba7160d1c7ca810cc40bc4a7a733"
+    },
+    {
+      "id": "colinhacks-zod-defect-574d480f",
+      "repoPath": "repos/colinhacks-zod",
+      "base": "1c51cbe0fe23d09f8d520b31487d50a01588fae5",
+      "head": "c532d766de54e13aea5d03698980bf7d976fc544",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "packages-zod-src-v4-locales-tg-ts-1",
+          "description": "A later bug-fix replaced this line in packages/zod/src/v4/locales/tg.ts.",
+          "path": "packages/zod/src/v4/locales/tg.ts",
+          "quote": "return `Қимати дискриминатори нодуруст: ${opts} интизор мерафт`;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-09-09T10:46:40-07:00",
+      "sourceRepository": "colinhacks/zod",
+      "cloneUrl": "https://github.com/colinhacks/zod.git",
+      "sourceCommit": "574d480fb443d3fd396efbcb8230f3dfee4a2cd2"
+    },
+    {
+      "id": "debug-js-debug-defect-0b6ca275",
+      "repoPath": "repos/debug-js-debug",
+      "base": "2ba1323100b915bdd6d51534c67d13d6669fdb7b",
+      "head": "6b45c3a15510ad67a9bc79b1309c1e75c3ab6e0a",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "browser-js-1",
+          "description": "A later bug-fix replaced this line in browser.js.",
+          "path": "browser.js",
+          "quote": "if ('env' in (process || {})) {"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2016-11-10T12:46:44+10:00",
+      "sourceRepository": "debug-js/debug",
+      "cloneUrl": "https://github.com/debug-js/debug.git",
+      "sourceCommit": "0b6ca275e61125d001a5dd2c7782b67433084049"
+    },
+    {
+      "id": "debug-js-debug-defect-cae07b70",
+      "repoPath": "repos/debug-js-debug",
+      "base": "664613047c696b050520de0b3af012ee55bd9882",
+      "head": "f311b10b7b79efb33f4e23898ae6bbb152e94b16",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-browser-js-1",
+          "description": "A later bug-fix replaced this line in src/browser.js.",
+          "path": "src/browser.js",
+          "quote": "if (typeof window !== 'undefined' && window && typeof window.process !== 'undefined' && window.process.type === 'renderer') {"
+        },
+        {
+          "id": "src-browser-js-2",
+          "description": "A later bug-fix replaced this line in src/browser.js.",
+          "path": "src/browser.js",
+          "quote": "return (typeof document !== 'undefined' && document && 'WebkitAppearance' in document.documentElement.style) ||"
+        },
+        {
+          "id": "src-browser-js-3",
+          "description": "A later bug-fix replaced this line in src/browser.js.",
+          "path": "src/browser.js",
+          "quote": "(typeof window !== 'undefined' && window && window.console && (console.firebug || (console.exception && console.table))) ||"
+        },
+        {
+          "id": "src-browser-js-4",
+          "description": "A later bug-fix replaced this line in src/browser.js.",
+          "path": "src/browser.js",
+          "quote": "(typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\\/(\\d+)/) && parseInt(RegExp.$1, 10) >= 31) ||"
+        },
+        {
+          "id": "src-browser-js-5",
+          "description": "A later bug-fix replaced this line in src/browser.js.",
+          "path": "src/browser.js",
+          "quote": "(typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\\/(\\d+)/));"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2017-04-27T08:59:02-07:00",
+      "sourceRepository": "debug-js/debug",
+      "cloneUrl": "https://github.com/debug-js/debug.git",
+      "sourceCommit": "cae07b70c968bdcadffff452dee8613522857888"
+    },
+    {
+      "id": "expressjs-express-clean-66878d3e",
+      "repoPath": "repos/expressjs-express",
+      "base": "18e5985b8a9d5e8423db0a9121f22bdaecd5b120",
+      "head": "66878d3e70437ba7b887ec519a3e33edc5bca0c7",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-07-05T14:03:11-05:00",
+      "sourceRepository": "expressjs/express",
+      "cloneUrl": "https://github.com/expressjs/express.git",
+      "sourceCommit": "66878d3e70437ba7b887ec519a3e33edc5bca0c7"
+    },
+    {
+      "id": "expressjs-express-clean-f873ac23",
+      "repoPath": "repos/expressjs-express",
+      "base": "6340c1eaaedc0ddcae8be8df2cdb1d2e961cbf2f",
+      "head": "f873ac23124ffcff8c040b4bd257b32c29828d53",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-05-04T10:53:41+02:00",
+      "sourceRepository": "expressjs/express",
+      "cloneUrl": "https://github.com/expressjs/express.git",
+      "sourceCommit": "f873ac23124ffcff8c040b4bd257b32c29828d53"
+    },
+    {
+      "id": "expressjs-multer-defect-9354e5d6",
+      "repoPath": "repos/expressjs-multer",
+      "base": "6313b1dd8b13df5940c09354fe09fb8342cb5632",
+      "head": "81cbee82db11461b31e06a6df5a71d80773bdff8",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "index-js-1",
+          "description": "A later bug-fix replaced this line in index.js.",
+          "path": "index.js",
+          "quote": "if (options.limits && options.limits.fileSize != null &&"
+        },
+        {
+          "id": "index-js-2",
+          "description": "A later bug-fix replaced this line in index.js.",
+          "path": "index.js",
+          "quote": "!Number.isInteger(options.limits.fileSize) && options.limits.fileSize !== Infinity) {"
+        },
+        {
+          "id": "index-js-3",
+          "description": "A later bug-fix replaced this line in index.js.",
+          "path": "index.js",
+          "quote": "throw new TypeError('Expected limits.fileSize to be an integer or Infinity')"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-08-29T21:50:58+05:30",
+      "sourceRepository": "expressjs/multer",
+      "cloneUrl": "https://github.com/expressjs/multer.git",
+      "sourceCommit": "9354e5d69ae6c9c0e17d5ed7a2c54c39bd208df0"
+    },
+    {
+      "id": "immerjs-immer-defect-3eeb3319",
+      "repoPath": "repos/immerjs-immer",
+      "base": "8e12c78073c5f7c3a556a76dd780125b23bb12a3",
+      "head": "a81096024ca1d6de75feb0b26a2f6a4aa5ae4bf7",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-types-types-external-ts-1",
+          "description": "A later bug-fix replaced this line in src/types/types-external.ts.",
+          "path": "src/types/types-external.ts",
+          "quote": "export type WritableDraft<T> = {"
+        },
+        {
+          "id": "src-types-types-external-ts-2",
+          "description": "A later bug-fix replaced this line in src/types/types-external.ts.",
+          "path": "src/types/types-external.ts",
+          "quote": "-readonly [K in keyof T]: T[K] extends object ? Draft<T[K]> : T[K]"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2023-01-16T11:24:13-05:00",
+      "sourceRepository": "immerjs/immer",
+      "cloneUrl": "https://github.com/immerjs/immer.git",
+      "sourceCommit": "3eeb33190523635a2fc3a8aa7f83b537d15a7c3c"
+    },
+    {
+      "id": "immerjs-immer-defect-47689d79",
+      "repoPath": "repos/immerjs-immer",
+      "base": "f930ce111a55593f4d2dd9edbd3ea92b231f1500",
+      "head": "b2b41926ac476d9dbb4e67be3da10ae84db4777d",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-types-external-ts-1",
+          "description": "A later bug-fix replaced this line in src/types-external.ts.",
+          "path": "src/types-external.ts",
+          "quote": "export function noop() {}"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2020-01-15T09:52:24Z",
+      "sourceRepository": "immerjs/immer",
+      "cloneUrl": "https://github.com/immerjs/immer.git",
+      "sourceCommit": "47689d7903ad962ed50bb083ac16456f4d11ae88"
+    },
+    {
+      "id": "immerjs-immer-defect-9007be0a",
+      "repoPath": "repos/immerjs-immer",
+      "base": "1b70ad509d192de20c50dd8f132d0a5a121413a9",
+      "head": "41673f49f2b2e4d8df9e173bc8792996e26987ae",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-core-proxy-ts-1",
+          "description": "A later bug-fix replaced this line in src/core/proxy.ts.",
+          "path": "src/core/proxy.ts",
+          "quote": "import {isDraft} from \"../utils/common\""
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2020-10-21T00:52:43+01:00",
+      "sourceRepository": "immerjs/immer",
+      "cloneUrl": "https://github.com/immerjs/immer.git",
+      "sourceCommit": "9007be0a68e8c521d23657729036d2eee9f5df83"
+    },
+    {
+      "id": "jshttp-cookie-defect-4898ba23",
+      "repoPath": "repos/jshttp-cookie",
+      "base": "bc66a7e66b99ad66de81b730492d0aba49f60eb6",
+      "head": "408c2b40c6c5783fcfae619d30e8427e9c96a2db",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-index-ts-1",
+          "description": "A later bug-fix replaced this line in src/index.ts.",
+          "path": "src/index.ts",
+          "quote": ": options.sameSite;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2024-11-15T14:51:17-05:00",
+      "sourceRepository": "jshttp/cookie",
+      "cloneUrl": "https://github.com/jshttp/cookie.git",
+      "sourceCommit": "4898ba23a59cb7196df35b58dedfe9a11b68fb91"
+    },
+    {
+      "id": "markedjs-marked-defect-1da8fb5d",
+      "repoPath": "repos/markedjs-marked",
+      "base": "302ee59b2b2f09450064a7b90a013bc6da5e16f4",
+      "head": "28528ff2595600a8d4626b940036e48b9b0b8fe3",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-rules-ts-1",
+          "description": "A later bug-fix replaced this line in src/rules.ts.",
+          "path": "src/rules.ts",
+          "quote": "const blockSkip = /\\[(?:[^\\[\\]`]|`[^`]*?`)*?\\]\\((?:\\\\[\\s\\S]|[^\\\\\\(\\)]|\\((?:\\\\[\\s\\S]|[^\\\\\\(\\)])*\\))*\\)|`[^`]*?`|<(?! )[^<>]*?>/g;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2025-10-17T12:35:03+05:30",
+      "sourceRepository": "markedjs/marked",
+      "cloneUrl": "https://github.com/markedjs/marked.git",
+      "sourceCommit": "1da8fb5da93f9623ce975369a1d4e67eee4d8ba8"
+    },
+    {
+      "id": "markedjs-marked-defect-3f144a0e",
+      "repoPath": "repos/markedjs-marked",
+      "base": "bbb84c88cf3a187c93fbc8966002164d229eba62",
+      "head": "0de7188bf1f30511490c961d53865390e7ede956",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-rules-ts-1",
+          "description": "A later bug-fix replaced this line in src/rules.ts.",
+          "path": "src/rules.ts",
+          "quote": "const blockquoteParagraph = createParagraph(/ {0,3}(?:[*+-]|\\d{1,9}[.)])[ \\t]+[^ \\t\\n]/);"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-07-14T23:08:05+01:00",
+      "sourceRepository": "markedjs/marked",
+      "cloneUrl": "https://github.com/markedjs/marked.git",
+      "sourceCommit": "3f144a0e93b515877d5f55b92039d87eea9a6b04"
+    },
+    {
+      "id": "markedjs-marked-defect-b699db3c",
+      "repoPath": "repos/markedjs-marked",
+      "base": "e250e31f3e1de80e41baf6f83ac8d3123d1e114f",
+      "head": "0653c24b59edfe03e327cbb68ea8318cd0b93641",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-lexer-ts-1",
+          "description": "A later bug-fix replaced this line in src/Lexer.ts.",
+          "path": "src/Lexer.ts",
+          "quote": "maskedSrc = maskedSrc.replace(this.tokenizer.rules.inline.reflinkSearch, match0 =>"
+        },
+        {
+          "id": "src-lexer-ts-2",
+          "description": "A later bug-fix replaced this line in src/Lexer.ts.",
+          "path": "src/Lexer.ts",
+          "quote": "Object.hasOwn(this.tokens.links, match0.slice(match0.lastIndexOf('[') + 1, -1))"
+        },
+        {
+          "id": "src-lexer-ts-3",
+          "description": "A later bug-fix replaced this line in src/Lexer.ts.",
+          "path": "src/Lexer.ts",
+          "quote": "? '[' + 'a'.repeat(match0.length - 2) + ']'"
+        },
+        {
+          "id": "src-lexer-ts-4",
+          "description": "A later bug-fix replaced this line in src/Lexer.ts.",
+          "path": "src/Lexer.ts",
+          "quote": ": match0);"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-08-24T12:00:46-03:00",
+      "sourceRepository": "markedjs/marked",
+      "cloneUrl": "https://github.com/markedjs/marked.git",
+      "sourceCommit": "b699db3c6de018ccdbf93ac28b0f0677c627c576"
+    },
+    {
+      "id": "markedjs-marked-defect-e3c0d3e2",
+      "repoPath": "repos/markedjs-marked",
+      "base": "0ccf47693b56691737579abee2e455dd23a6cd17",
+      "head": "302ee59b2b2f09450064a7b90a013bc6da5e16f4",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-rules-ts-1",
+          "description": "A later bug-fix replaced this line in src/rules.ts.",
+          "path": "src/rules.ts",
+          "quote": "const blockSkip = /\\[[^\\[\\]]*?\\]\\((?:\\\\[\\s\\S]|[^\\\\\\(\\)]|\\((?:\\\\[\\s\\S]|[^\\\\\\(\\)])*\\))*\\)|`[^`]*?`|<(?! )[^<>]*?>/g;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2025-10-07T08:49:22+05:30",
+      "sourceRepository": "markedjs/marked",
+      "cloneUrl": "https://github.com/markedjs/marked.git",
+      "sourceCommit": "e3c0d3e208c80daca2c9fbb68f125f060cd30fc3"
+    },
+    {
+      "id": "node-fetch-node-fetch-defect-079b11e2",
+      "repoPath": "repos/node-fetch-node-fetch",
+      "base": "b3878b9a3e42ab4f2362ecc24790ee6a689edb2e",
+      "head": "aab3c605eb8e1897dbcf105c43b00d31db754a4d",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-index-js-1",
+          "description": "A later bug-fix replaced this line in src/index.js.",
+          "path": "src/index.js",
+          "quote": "const fetch = (url, options_) => {"
+        },
+        {
+          "id": "src-index-js-2",
+          "description": "A later bug-fix replaced this line in src/index.js.",
+          "path": "src/index.js",
+          "quote": "export default fetch;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2020-05-25T19:20:30+02:00",
+      "sourceRepository": "node-fetch/node-fetch",
+      "cloneUrl": "https://github.com/node-fetch/node-fetch.git",
+      "sourceCommit": "079b11e2577f0cb0b1f1e6e0e42dc6079f4cd2f9"
+    },
+    {
+      "id": "node-fetch-node-fetch-defect-5535c2ed",
+      "repoPath": "repos/node-fetch-node-fetch",
+      "base": "ecd3d52c55b26d2d350e2c9e0347675a02b3d2cc",
+      "head": "1d5778ad0d910dbd1584fb407a186f5a0bc1ea22",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "browser-js-1",
+          "description": "A later bug-fix replaced this line in browser.js.",
+          "path": "browser.js",
+          "quote": "exports.default = global.fetch.bind(global);"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2019-09-16T13:52:22+02:00",
+      "sourceRepository": "node-fetch/node-fetch",
+      "cloneUrl": "https://github.com/node-fetch/node-fetch.git",
+      "sourceCommit": "5535c2ed478d418969ecfd60c16453462de2a53f"
+    },
+    {
+      "id": "node-fetch-node-fetch-defect-7b86e946",
+      "repoPath": "repos/node-fetch-node-fetch",
+      "base": "55a4870ae5f805d8ff9a890ea2c652c9977e048e",
+      "head": "8ced5b941cf36d0d7e0c1017aa2a4abcb29ecd89",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "types-index-d-ts-1",
+          "description": "A later bug-fix replaced this line in @types/index.d.ts.",
+          "path": "@types/index.d.ts",
+          "quote": "constructor(input: RequestInfo | URL, init?: RequestInit);"
+        },
+        {
+          "id": "types-index-d-ts-2",
+          "description": "A later bug-fix replaced this line in @types/index.d.ts.",
+          "path": "@types/index.d.ts",
+          "quote": "export default function fetch(url: RequestInfo | URL, init?: RequestInit): Promise<Response>;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2023-03-11T21:47:05+11:00",
+      "sourceRepository": "node-fetch/node-fetch",
+      "cloneUrl": "https://github.com/node-fetch/node-fetch.git",
+      "sourceCommit": "7b86e946b02dfdd28f4f8fca3d73a022cbb5ca1e"
+    },
+    {
+      "id": "preactjs-preact-clean-2638365d",
+      "repoPath": "repos/preactjs-preact",
+      "base": "0442c3f94cc29518ceced4f8d0fa943ffea23d39",
+      "head": "2638365d742f34a5c78d173ad85d0e1df342a93d",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-07T19:59:18+02:00",
+      "sourceRepository": "preactjs/preact",
+      "cloneUrl": "https://github.com/preactjs/preact.git",
+      "sourceCommit": "2638365d742f34a5c78d173ad85d0e1df342a93d"
+    },
+    {
+      "id": "preactjs-preact-clean-66e19fda",
+      "repoPath": "repos/preactjs-preact",
+      "base": "ec2f5fb849f209dc0fa12ece498c029a0029f01a",
+      "head": "66e19fda5bb5e2ae1db80328b73cfb15b67fb914",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-09-02T19:20:38+02:00",
+      "sourceRepository": "preactjs/preact",
+      "cloneUrl": "https://github.com/preactjs/preact.git",
+      "sourceCommit": "66e19fda5bb5e2ae1db80328b73cfb15b67fb914"
+    },
+    {
+      "id": "preactjs-preact-defect-736e4f9d",
+      "repoPath": "repos/preactjs-preact",
+      "base": "e3a15ecd85c79b8bb762a1612840999b928ae950",
+      "head": "caeaf58aa6b73eca419a6e881d6c30ba93a1a6f1",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-dom-d-ts-1",
+          "description": "A later bug-fix replaced this line in src/dom.d.ts.",
+          "path": "src/dom.d.ts",
+          "quote": "type?: Signalish<HTMLInputTypeAttribute | undefined>;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2026-05-18T12:05:56-05:00",
+      "sourceRepository": "preactjs/preact",
+      "cloneUrl": "https://github.com/preactjs/preact.git",
+      "sourceCommit": "736e4f9d774bd4f4eb6cb35b5a05a6030c4c58b4"
+    },
+    {
+      "id": "preactjs-preact-defect-7fbf03f6",
+      "repoPath": "repos/preactjs-preact",
+      "base": "a784a62b69caa89f167993db5ac41b9b2fc698c4",
+      "head": "3a1b19a982c2b6b33ef912af051d176156feff5d",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-diff-children-js-1",
+          "description": "A later bug-fix replaced this line in src/diff/children.js.",
+          "path": "src/diff/children.js",
+          "quote": "if (!newDom && oldVNode._dom == oldDom) {"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2024-04-05T11:28:41+02:00",
+      "sourceRepository": "preactjs/preact",
+      "cloneUrl": "https://github.com/preactjs/preact.git",
+      "sourceCommit": "7fbf03f699199da6f91aa078fd9c44ed40023c71"
+    },
+    {
+      "id": "reduxjs-redux-clean-3084fc33",
+      "repoPath": "repos/reduxjs-redux",
+      "base": "3aa561f9fc13f3287e6d83764f85fe0e82437c5f",
+      "head": "3084fc33bb23ab4cab4796172eafe342da4e73d9",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-08-01T17:52:12-07:00",
+      "sourceRepository": "reduxjs/redux",
+      "cloneUrl": "https://github.com/reduxjs/redux.git",
+      "sourceCommit": "3084fc33bb23ab4cab4796172eafe342da4e73d9"
+    },
+    {
+      "id": "reduxjs-redux-clean-71606661",
+      "repoPath": "repos/reduxjs-redux",
+      "base": "3084fc33bb23ab4cab4796172eafe342da4e73d9",
+      "head": "71606661ac515bdd64c199a6bb508401c7cf736f",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-08-20T08:11:39+05:30",
+      "sourceRepository": "reduxjs/redux",
+      "cloneUrl": "https://github.com/reduxjs/redux.git",
+      "sourceCommit": "71606661ac515bdd64c199a6bb508401c7cf736f"
+    },
+    {
+      "id": "typicode-json-server-defect-1b7c0fb1",
+      "repoPath": "repos/typicode-json-server",
+      "base": "3710dce4a025da99ffce4b424a51b6c9d07861bb",
+      "head": "ef6e268efd75eaf25f4ec86952a521114c987dc6",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "src-app-ts-1",
+          "description": "A later bug-fix replaced this line in src/app.ts.",
+          "path": "src/app.ts",
+          "quote": "res.locals['data'] = await service.destroyById(name, id, req.query['dependent'])"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2024-06-03T19:22:40+08:00",
+      "sourceRepository": "typicode/json-server",
+      "cloneUrl": "https://github.com/typicode/json-server.git",
+      "sourceCommit": "1b7c0fb1b227dd9242d85d6bb9767b026cd79cb2"
+    },
+    {
+      "id": "uuidjs-uuid-clean-ea83515d",
+      "repoPath": "repos/uuidjs-uuid",
+      "base": "ac3686077dc34d379681589a52a10d34aedec3d7",
+      "head": "ea83515d6a4de13a8f9d253fe772752c9dd7bbbe",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-07-07T09:04:17-07:00",
+      "sourceRepository": "uuidjs/uuid",
+      "cloneUrl": "https://github.com/uuidjs/uuid.git",
+      "sourceCommit": "ea83515d6a4de13a8f9d253fe772752c9dd7bbbe"
+    },
+    {
+      "id": "uuidjs-uuid-clean-f3c564eb",
+      "repoPath": "repos/uuidjs-uuid",
+      "base": "b1da338815af4d919295eacb33aae340e372232a",
+      "head": "f3c564eb56b22b2abe754b71e57857c58a90e29c",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [],
+      "packs": [],
+      "kind": "clean",
+      "commitDate": "2026-08-19T02:15:47+08:00",
+      "sourceRepository": "uuidjs/uuid",
+      "cloneUrl": "https://github.com/uuidjs/uuid.git",
+      "sourceCommit": "f3c564eb56b22b2abe754b71e57857c58a90e29c"
+    },
+    {
+      "id": "uuidjs-uuid-defect-1fef18ba",
+      "repoPath": "repos/uuidjs-uuid",
+      "base": "0ea33e6597e19186bf82ea76c0b0db432068bda3",
+      "head": "815daa38c6ed3e4bf1782ca8844c34063b238118",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-rng-browser-js-1",
+          "description": "A later bug-fix replaced this line in lib/rng-browser.js.",
+          "path": "lib/rng-browser.js",
+          "quote": "var getRandomValues = typeof(crypto) != 'undefined' && crypto.getRandomValues;"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2018-01-15T13:32:08-08:00",
+      "sourceRepository": "uuidjs/uuid",
+      "cloneUrl": "https://github.com/uuidjs/uuid.git",
+      "sourceCommit": "1fef18baf249867ad12bc35f5a239e5339073758"
+    },
+    {
+      "id": "uuidjs-uuid-defect-205e0ed1",
+      "repoPath": "repos/uuidjs-uuid",
+      "base": "c0d44fda8abeac5eb1444f03a135f8a6353854da",
+      "head": "d062fdc14aae6980cbd6c8350c4af70c1db30b0f",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-rng-browser-js-1",
+          "description": "A later bug-fix replaced this line in lib/rng-browser.js.",
+          "path": "lib/rng-browser.js",
+          "quote": "var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||"
+        },
+        {
+          "id": "lib-rng-browser-js-2",
+          "description": "A later bug-fix replaced this line in lib/rng-browser.js.",
+          "path": "lib/rng-browser.js",
+          "quote": "(typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2018-04-25T13:55:51-04:00",
+      "sourceRepository": "uuidjs/uuid",
+      "cloneUrl": "https://github.com/uuidjs/uuid.git",
+      "sourceCommit": "205e0ed1f710199e4afbc3480da58e042d899b11"
+    },
+    {
+      "id": "uuidjs-uuid-defect-305d8777",
+      "repoPath": "repos/uuidjs-uuid",
+      "base": "c662540f7f7edf2867766d10b61f00e3f993a4a4",
+      "head": "e134f0dcbde976d5f69d3db143bee8e2fa8a9f2c",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-v35-js-1",
+          "description": "A later bug-fix replaced this line in lib/v35.js.",
+          "path": "lib/v35.js",
+          "quote": "const el ="
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2018-06-28T14:28:25-07:00",
+      "sourceRepository": "uuidjs/uuid",
+      "cloneUrl": "https://github.com/uuidjs/uuid.git",
+      "sourceCommit": "305d87779000d9b0e40ab4d481eb3b79c5965607"
+    },
+    {
+      "id": "yargs-yargs-defect-0175677b",
+      "repoPath": "repos/yargs-yargs",
+      "base": "d30ffac36abdfc4a6b391fca361e91d5bef1c67a",
+      "head": "36abf26919b5a19f3adec08598539851c34b7086",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-completion-ts-1",
+          "description": "A later bug-fix replaced this line in lib/completion.ts.",
+          "path": "lib/completion.ts",
+          "quote": "if (!this.argsContainKey(args, argv, key, negable)) {"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2021-03-08T22:22:11+02:00",
+      "sourceRepository": "yargs/yargs",
+      "cloneUrl": "https://github.com/yargs/yargs.git",
+      "sourceCommit": "0175677b79ffe50a9c5477631288ae10120b8a32"
+    },
+    {
+      "id": "yargs-yargs-defect-99c2dc85",
+      "repoPath": "repos/yargs-yargs",
+      "base": "b4812ac99a8c6a4a5f5a886d9ad33080d42f6075",
+      "head": "aa09faf708457bf46eb9b003ce168302763a7d9e",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "yargs-js-1",
+          "description": "A later bug-fix replaced this line in yargs.js.",
+          "path": "yargs.js",
+          "quote": "if (!argv._) return argv"
+        },
+        {
+          "id": "yargs-js-2",
+          "description": "A later bug-fix replaced this line in yargs.js.",
+          "path": "yargs.js",
+          "quote": "delete argv['--']"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2019-11-18T19:14:29-08:00",
+      "sourceRepository": "yargs/yargs",
+      "cloneUrl": "https://github.com/yargs/yargs.git",
+      "sourceCommit": "99c2dc850e67c606644f8b0c0bca1a59c87dcbcd"
+    },
+    {
+      "id": "yargs-yargs-defect-b5fedbec",
+      "repoPath": "repos/yargs-yargs",
+      "base": "f3e55d82bc2285c725055b658a07ce5bc0cf8245",
+      "head": "e2a213351326ad94794839e7a9cffa5aaae311d6",
+      "task": "Review this change for actionable correctness defects.",
+      "labels": [
+        {
+          "id": "lib-apply-extends-js-1",
+          "description": "A later bug-fix replaced this line in lib/apply-extends.js.",
+          "path": "lib/apply-extends.js",
+          "quote": "return path.isAbsolute(pathToExtend) ? pathToExtend : path.join(cwd, pathToExtend)"
+        }
+      ],
+      "packs": [],
+      "kind": "defect",
+      "commitDate": "2017-02-25T14:50:04-06:00",
+      "sourceRepository": "yargs/yargs",
+      "cloneUrl": "https://github.com/yargs/yargs.git",
+      "sourceCommit": "b5fedbec1ec810d498f7a5d81bafa28cddfd3f9a"
+    }
+  ]
+}
