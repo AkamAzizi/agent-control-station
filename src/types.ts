@@ -50,7 +50,7 @@ export interface ContextPolicy {
   timeoutMs: number;
 }
 export const DEFAULT_POLICY: ContextPolicy = {
-  maxBytes: 96 * 1024,
+  maxBytes: 768 * 1024,
   maxPackBytes: 8 * 1024,
   dependencyDepth: 1,
   maxToolCalls: 40,

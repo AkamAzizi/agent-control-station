@@ -31,6 +31,8 @@ Use relative `/api` paths, same origin. JSON errors: `{error:string}`. No fake c
 
 `pnpm cli corpus --out DIR` writes three original seeded-defect Git repositories plus `dataset.json`. Labels include `path` and `quote` so fixture scoring can auto-assess blinded `*.assessment.json` files.
 
+`pnpm cli dataset-mine` clones public TypeScript/JavaScript repositories, emits held-out defect and clean-control cases, and freezes `artifacts/benchmark.dataset.json` with a SHA-256 sidecar. `kind: clean` cases have zero labels; a finding on those rows is a false positive. Fetch clones later with `pnpm cli dataset-fetch`.
+
 `STATION_CASSETTE=record|replay` and `STATION_CASSETTE_FILE` wrap provider `fetch` in the Pi worker. Replay refuses unmatched live HTTP.
 
 Tests use node:test via `tsx --test test/*.test.ts` and exercise behavior through public interfaces. The Pi adapter runs in a child process with a controlled ResourceLoader and an explicit read-only tool allowlist. Child tool requests are enforced and recorded in the daemon; disconnecting the daemon stops the child.

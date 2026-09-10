@@ -159,6 +159,36 @@ test('mandatory diff and definitions produce needs_input instead of silent trunc
   assert.equal(changed.id, compile({ ...snapshotValue, repoPath: '/another/path' }, 'x').id);
 });
 
+test('default compile stays ready when the mandatory diff exceeds 96 KiB', () => {
+  const lines = Array.from({ length: 8000 }, (_, index) => `export const n${index} = ${index};`);
+  const diff = `diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n@@ -0,0 +1,8000 @@\n${lines.map((line) => `+${line}`).join('\n')}\n`;
+  assert.ok(Buffer.byteLength(diff) > 96 * 1024);
+  const snapshotValue: Snapshot = {
+    id: 'large-mandatory-diff',
+    repoPath: '/tmp/station-large-diff',
+    base: 'base',
+    head: 'head',
+    mergeBase: 'base',
+    diff,
+    files: [
+      {
+        path: 'src/a.ts',
+        status: 'added',
+        binary: false,
+        hunks: [{ oldStart: 0, oldLines: 0, newStart: 1, newLines: 8000 }],
+      },
+    ],
+    sources: {
+      base: {},
+      head: { 'src/a.ts': lines.join('\n') },
+    },
+    limitations: [],
+  };
+  const packet = compile(snapshotValue, 'Review this change for actionable correctness defects.');
+  assert.equal(packet.status, 'ready');
+  assert.ok(packet.byteLength > 96 * 1024);
+});
+
 test('validateRepository rejects non-repositories', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'agent-station-not-git-'));
   try {

@@ -64,7 +64,7 @@ Data lives in `.station/`, which is ignored by Git. Override with `STATION_DATA`
 4. Run a fresh finding verifier against the original findings and captured evidence.
 5. Save all dispositions, usage, read traces, operator feedback and exportable results.
 
-Each worker has a ten-minute deadline and a forty-tool-call ceiling. The upfront context default is 96 KiB, including at most 8 KiB of matching judgment packs. Token counts for context size and exploration are estimates; provider-reported usage is recorded separately. Unknown cost is displayed as unavailable.
+Each worker has a ten-minute deadline and a forty-tool-call ceiling. The upfront context default is 768 KiB, including at most 8 KiB of matching judgment packs. Token counts for context size and exploration are estimates; provider-reported usage is recorded separately. Unknown cost is displayed as unavailable.
 
 Cancellation releases a worker slot. An interrupted daemon marks unfinished attempts as interrupted. Retry creates a new attempt using the original Git snapshot and captured pack versions, even if branches or active packs have since changed. To change scope or budget, create a new review.
 
@@ -112,7 +112,7 @@ pnpm cli pack-import --file /absolute/path/pack.md
 
 ## Evaluate quality and exploration
 
-Copy `examples/benchmark.dataset.json` or generate the seeded corpus (`pnpm cli corpus --out DIR`, described in `corpus/README.md`). Supply real repository paths, immutable refs, task descriptions and independently identified expected defects. Keep pack-training PRs separate from evaluation PRs. Start with at least twenty held-out PRs and three repeats for each variant when measuring a model.
+Copy `examples/benchmark.dataset.json` or generate the seeded corpus (`pnpm cli corpus --out DIR`, described in `corpus/README.md`). For a held-out public set, use the frozen file at `artifacts/benchmark.dataset.json` (hash in `artifacts/benchmark.dataset.sha256`; restore clones with `pnpm cli dataset-fetch`). Supply real repository paths, immutable refs, task descriptions and independently identified expected defects. Keep pack-training PRs separate from evaluation PRs. Start with at least twenty held-out PRs and three repeats for each variant when measuring a model.
 
 ```sh
 pnpm cli corpus --out /tmp/station-corpus

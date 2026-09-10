@@ -7,7 +7,7 @@ import {
   Sparkles,
   TerminalSquare,
 } from 'lucide-react';
-import type { ReviewRequest, Run } from '../../../../src/types';
+import { DEFAULT_POLICY, type ReviewRequest, type Run } from '../../../../src/types';
 import { api, modelOptionKey, type Notice, type StationState } from '../lib/station';
 import { Modal } from '../components/Modal';
 
@@ -38,7 +38,7 @@ export function ReviewModal({
   const [importing, setImporting] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [scope, setScope] = useState('');
-  const [maxBytesKiB, setMaxBytesKiB] = useState('96');
+  const [maxBytesKiB, setMaxBytesKiB] = useState(String(DEFAULT_POLICY.maxBytes / 1024));
   const [saving, setSaving] = useState(false);
   const selectedModel = station?.models.find((item) => modelOptionKey(item) === modelKey);
   const importPullRequest = async () => {
