@@ -173,6 +173,21 @@ async function parentsOf(repoPath: string, sha: string): Promise<string[]> {
   return raw ? raw.split(/\s+/).filter(Boolean) : [];
 }
 
+async function ensureCommit(repoPath: string, sha: string): Promise<boolean> {
+  try {
+    await git(repoPath, ['cat-file', '-e', `${sha}^{commit}`]);
+    return true;
+  } catch {
+    try {
+      await git(repoPath, ['fetch', 'origin', sha]);
+      await git(repoPath, ['cat-file', '-e', `${sha}^{commit}`]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
 async function changedPaths(repoPath: string, base: string, head: string): Promise<string[]> {
   const raw = await git(repoPath, [
     'diff-tree',
@@ -293,62 +308,69 @@ export async function mineFixCommit(
   commit: string,
   options: MineCommitOptions,
 ): Promise<MinedCase | null> {
-  const subject = await commitSubject(repoPath, commit);
-  if (options.requireConventionalMessage !== false && !isConventionalFixMessage(subject))
+  try {
+    if (!(await ensureCommit(repoPath, commit))) return null;
+    const subject = await commitSubject(repoPath, commit);
+    if (options.requireConventionalMessage !== false && !isConventionalFixMessage(subject))
+      return null;
+    const parents = await parentsOf(repoPath, commit);
+    const head = parents[0];
+    if (!head) return null;
+    if (!(await ensureCommit(repoPath, head))) return null;
+    const fixFiles = await changedPaths(repoPath, `${commit}^1`, commit);
+    const codeFiles = fixFiles.filter(isCodePath);
+    if (!codeFiles.length || fixFiles.length > 20) return null;
+    const diff = await git(repoPath, [
+      'diff',
+      '--unified=0',
+      '--no-renames',
+      `${commit}^1`,
+      commit,
+      '--',
+      ...codeFiles,
+    ]);
+    const removed = parseRemovedCodeLines(diff);
+    if (!removed.length) return null;
+    const base = await chooseBase(repoPath, head, removed);
+    if (!base) return null;
+    if (!(await ensureCommit(repoPath, base))) return null;
+    const files = await changedPaths(repoPath, base, head);
+    if (files.length === 0 || files.length > 20) return null;
+    const labels: MinedLabel[] = [];
+    for (const [index, line] of removed.entries()) {
+      if (!files.includes(line.path)) continue;
+      if (!(await quoteIntroducedInDiff(repoPath, base, head, line))) continue;
+      labels.push({
+        id: `${line.path
+          .replace(/[^a-z0-9]+/gi, '-')
+          .replace(/^-+|-+$/g, '')
+          .toLowerCase()}-${index + 1}`,
+        description: `A later bug-fix replaced this line in ${line.path}.`,
+        path: line.path,
+        quote: line.quote,
+      });
+    }
+    if (!labels.length) return null;
+    const stat = await git(repoPath, ['diff', '--shortstat', base, head]);
+    const changed =
+      Number(/(\d+) insertions?/.exec(stat)?.[1] ?? 0) +
+      Number(/(\d+) deletions?/.exec(stat)?.[1] ?? 0);
+    if (changed > 800) return null;
+    const behind = Number(await git(repoPath, ['rev-list', '--count', `${base}..${head}`]));
+    if (behind > 40) return null;
+    return buildCase(
+      repoPath,
+      options,
+      'defect',
+      commit,
+      base,
+      head,
+      await commitDate(repoPath, commit),
+      labels,
+    );
+  } catch {
     return null;
-  const parents = await parentsOf(repoPath, commit);
-  const head = parents[0];
-  if (!head) return null;
-  const fixFiles = await changedPaths(repoPath, `${commit}^1`, commit);
-  const codeFiles = fixFiles.filter(isCodePath);
-  if (!codeFiles.length || fixFiles.length > 20) return null;
-  const diff = await git(repoPath, [
-    'diff',
-    '--unified=0',
-    '--no-renames',
-    `${commit}^1`,
-    commit,
-    '--',
-    ...codeFiles,
-  ]);
-  const removed = parseRemovedCodeLines(diff);
-  if (!removed.length) return null;
-  const base = await chooseBase(repoPath, head, removed);
-  if (!base) return null;
-  const files = await changedPaths(repoPath, base, head);
-  if (files.length === 0 || files.length > 20) return null;
-  const labels: MinedLabel[] = [];
-  for (const [index, line] of removed.entries()) {
-    if (!files.includes(line.path)) continue;
-    if (!(await quoteIntroducedInDiff(repoPath, base, head, line))) continue;
-    labels.push({
-      id: `${line.path
-        .replace(/[^a-z0-9]+/gi, '-')
-        .replace(/^-+|-+$/g, '')
-        .toLowerCase()}-${index + 1}`,
-      description: `A later bug-fix replaced this line in ${line.path}.`,
-      path: line.path,
-      quote: line.quote,
-    });
   }
-  if (!labels.length) return null;
-  const stat = await git(repoPath, ['diff', '--shortstat', base, head]);
-  const changed =
-    Number(/(\d+) insertions?/.exec(stat)?.[1] ?? 0) +
-    Number(/(\d+) deletions?/.exec(stat)?.[1] ?? 0);
-  if (changed > 800) return null;
-  const behind = Number(await git(repoPath, ['rev-list', '--count', `${base}..${head}`]));
-  if (behind > 40) return null;
-  return buildCase(
-    repoPath,
-    options,
-    'defect',
-    commit,
-    base,
-    head,
-    await commitDate(repoPath, commit),
-    labels,
-  );
 }
 
 export async function mineCleanCommit(
@@ -356,33 +378,38 @@ export async function mineCleanCommit(
   commit: string,
   options: MineCommitOptions,
 ): Promise<MinedCase | null> {
-  const parents = await parentsOf(repoPath, commit);
-  const base = parents[0];
-  if (!base) return null;
-  const files = await changedPaths(repoPath, base, commit);
-  if (!files.length || files.length > 20) return null;
-  const docsOnly = files.every(isDocPath);
-  const depsOnly = files.every(isDepPath);
-  const subject = await commitSubject(repoPath, commit);
-  if (!docsOnly && !depsOnly) {
-    if (!isFormattingMessage(subject) && !isCleanCommitMessage(subject)) return null;
-    if (!(await diffIsWhitespaceOnly(repoPath, base, commit))) return null;
+  try {
+    if (!(await ensureCommit(repoPath, commit))) return null;
+    const parents = await parentsOf(repoPath, commit);
+    const base = parents[0];
+    if (!base) return null;
+    const files = await changedPaths(repoPath, base, commit);
+    if (!files.length || files.length > 20) return null;
+    const docsOnly = files.every(isDocPath);
+    const depsOnly = files.every(isDepPath);
+    const subject = await commitSubject(repoPath, commit);
+    if (!docsOnly && !depsOnly) {
+      if (!isFormattingMessage(subject) && !isCleanCommitMessage(subject)) return null;
+      if (!(await diffIsWhitespaceOnly(repoPath, base, commit))) return null;
+    }
+    if (depsOnly) {
+      const diff = await git(repoPath, ['diff', base, commit]);
+      if (!/"((dev|peer|optional)?[Dd]ependencies)"/.test(diff) && !isCleanCommitMessage(subject))
+        return null;
+    }
+    return buildCase(
+      repoPath,
+      options,
+      'clean',
+      commit,
+      base,
+      commit,
+      await commitDate(repoPath, commit),
+      [],
+    );
+  } catch {
+    return null;
   }
-  if (depsOnly) {
-    const diff = await git(repoPath, ['diff', base, commit]);
-    if (!/"((dev|peer|optional)?[Dd]ependencies)"/.test(diff) && !isCleanCommitMessage(subject))
-      return null;
-  }
-  return buildCase(
-    repoPath,
-    options,
-    'clean',
-    commit,
-    base,
-    commit,
-    await commitDate(repoPath, commit),
-    [],
-  );
 }
 
 export async function listRecentCommits(
