@@ -19,6 +19,6 @@ The fixture runtime makes no provider calls. Precision/recall here measure wheth
 
 ## Held-out public cases
 
-`pnpm cli dataset-mine --github --out artifacts` clones public TypeScript/JavaScript repositories and writes a frozen dataset (JSON + SHA-256) under `artifacts/`. Defect cases come from conventional `fix:` commits or merges that closed a `bug`-labelled pull request. The tree under review is the fix commit's parent; labels are the source lines that fix replaced. Clean cases are docs-only, formatting-only, or dependency-bump commits with zero labels.
+`pnpm cli dataset-mine --github --out artifacts` clones public TypeScript/JavaScript repositories and writes a frozen dataset (JSON + SHA-256) under `artifacts/`. Defect cases come from conventional `fix:` commits or merges that closed a `bug`-labelled pull request. The tree under review is the fix commit's parent; labels are the source lines that fix replaced. Typo, locale-copy, type/noop, and export/types-only fixes are dropped. Clean cases are source-only refactors, renames, type-only edits, or perf changes with zero labels; docs, lockfiles, and assets are excluded. Clean controls are matched to defect cases on files-changed and spread across the same date range. The frozen JSON `summary` records both distributions.
 
 Clones live in `artifacts/repos/` and are gitignored. After checkout, restore them with `pnpm cli dataset-fetch`. Hash the committed JSON before any evaluation run; do not retune against scores.

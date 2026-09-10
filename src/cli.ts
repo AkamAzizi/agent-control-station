@@ -73,17 +73,16 @@ async function main() {
       github: args.includes('--github'),
     });
     const frozen = await writeFrozenDataset(result.cases, out);
-    const defects = result.cases.filter((sample) => sample.kind === 'defect').length;
-    const cleans = result.cases.filter((sample) => sample.kind === 'clean').length;
     console.log(
       JSON.stringify(
         {
           cases: result.cases.length,
-          defects,
-          clean: cleans,
+          defects: result.cases.filter((sample) => sample.kind === 'defect').length,
+          clean: result.cases.filter((sample) => sample.kind === 'clean').length,
           sha256: frozen.sha256,
           dataset: frozen.datasetPath,
           hash: frozen.hashPath,
+          summary: frozen.summary,
         },
         null,
         2,
