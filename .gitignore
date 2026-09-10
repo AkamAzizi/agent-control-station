@@ -9,4 +9,5 @@ coverage/
 playwright-report/
 test-results/
 benchmark-results/
+artifacts/repos/
 .DS_Store

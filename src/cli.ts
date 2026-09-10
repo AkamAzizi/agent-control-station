@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from './server.js';
 import { compileReviewContext } from './compile.js';
@@ -57,6 +57,54 @@ async function main() {
     console.log(`Wrote ${result.dataset.cases.length} seeded cases to ${out}/dataset.json`);
     return;
   }
+  if (command === 'dataset-mine') {
+    const { mineHeldOutDataset, writeFrozenDataset, DEFAULT_REPOSITORIES } =
+      await import('./dataset-mine.js');
+    const out = resolve(flag('out', 'artifacts')!);
+    const result = await mineHeldOutDataset({
+      sources:
+        flag('repos')
+          ?.split(',')
+          .map((value) => value.trim())
+          .filter(Boolean) ?? DEFAULT_REPOSITORIES,
+      cacheDir: resolve(flag('cache', join(out, 'repos'))!),
+      defectTarget: Number(flag('defects', '25')),
+      cleanTarget: Number(flag('clean', '12')),
+      github: args.includes('--github'),
+    });
+    const frozen = await writeFrozenDataset(result.cases, out);
+    const defects = result.cases.filter((sample) => sample.kind === 'defect').length;
+    const cleans = result.cases.filter((sample) => sample.kind === 'clean').length;
+    console.log(
+      JSON.stringify(
+        {
+          cases: result.cases.length,
+          defects,
+          clean: cleans,
+          sha256: frozen.sha256,
+          dataset: frozen.datasetPath,
+          hash: frozen.hashPath,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+  if (command === 'dataset-fetch') {
+    const { fetchDatasetRepos } = await import('./dataset-mine.js');
+    const file = resolve(flag('dataset', 'artifacts/benchmark.dataset.json')!);
+    await fetchDatasetRepos(file, resolve(flag('cache', 'artifacts/repos')!));
+    return;
+  }
+  if (command === 'dataset-freeze') {
+    const { freezeDataset } = await import('./dataset-mine.js');
+    const frozen = await freezeDataset(
+      resolve(flag('dataset', 'artifacts/benchmark.dataset.json')!),
+    );
+    console.log(JSON.stringify(frozen, null, 2));
+    return;
+  }
   if (command === 'pack-import') {
     const file = flag('file');
     if (!file) throw new Error('Usage: pnpm cli pack-import --file PACK.md');
@@ -97,7 +145,7 @@ async function main() {
     return;
   }
   console.log(
-    'Commands: serve, context, mcp, corpus, pack-import, benchmark, benchmark-score. See README.md for options.',
+    'Commands: serve, context, mcp, corpus, dataset-mine, dataset-fetch, dataset-freeze, pack-import, benchmark, benchmark-score. See README.md for options.',
   );
 }
 main().catch((error) => {

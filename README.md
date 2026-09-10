@@ -112,7 +112,7 @@ pnpm cli pack-import --file /absolute/path/pack.md
 
 ## Evaluate quality and exploration
 
-Copy `examples/benchmark.dataset.json` or generate the seeded corpus (`pnpm cli corpus --out DIR`, described in `corpus/README.md`). Supply real repository paths, immutable refs, task descriptions and independently identified expected defects. Keep pack-training PRs separate from evaluation PRs. Start with at least twenty held-out PRs and three repeats for each variant when measuring a model.
+Copy `examples/benchmark.dataset.json` or generate the seeded corpus (`pnpm cli corpus --out DIR`, described in `corpus/README.md`). For a held-out public set, use the frozen file at `artifacts/benchmark.dataset.json` (hash in `artifacts/benchmark.dataset.sha256`; restore clones with `pnpm cli dataset-fetch`). Supply real repository paths, immutable refs, task descriptions and independently identified expected defects. Keep pack-training PRs separate from evaluation PRs. Start with at least twenty held-out PRs and three repeats for each variant when measuring a model.
 
 ```sh
 pnpm cli corpus --out /tmp/station-corpus

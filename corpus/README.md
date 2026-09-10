@@ -16,3 +16,9 @@ pnpm cli benchmark --dataset /tmp/station-corpus/dataset.json --runtime fixture 
 ```
 
 The fixture runtime makes no provider calls. Precision/recall here measure whether the harness recovered the seeded quotes, not model quality. Use `--runtime pi` plus `--provider` / `--model` (or a recorded cassette) when you want a paid experiment.
+
+## Held-out public cases
+
+`pnpm cli dataset-mine --github --out artifacts` clones public TypeScript/JavaScript repositories and writes a frozen dataset (JSON + SHA-256) under `artifacts/`. Defect cases come from conventional `fix:` commits or merges that closed a `bug`-labelled pull request. The tree under review is the fix commit's parent; labels are the source lines that fix replaced. Clean cases are docs-only, formatting-only, or dependency-bump commits with zero labels.
+
+Clones live in `artifacts/repos/` and are gitignored. After checkout, restore them with `pnpm cli dataset-fetch`. Hash the committed JSON before any evaluation run; do not retune against scores.
