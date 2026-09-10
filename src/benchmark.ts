@@ -20,32 +20,42 @@ import { scopedTools } from './runner/tools.js';
 import { acceptFindings } from './runner/review-result.js';
 import { renderBenchmarkGraph } from './benchmark-graph.js';
 
-const datasetSchema = z.object({
-  cases: z
-    .array(
-      z.object({
-        id: z.string().regex(/^[a-z0-9_-]+$/),
-        repoPath: z.string(),
-        base: z.string(),
-        head: z.string(),
-        task: z.string(),
-        labels: z.array(
-          z.object({
-            id: z.string(),
-            description: z.string(),
-            path: z.string().optional(),
-            quote: z.string().optional(),
-          }),
-        ),
-        packs: z.array(packSchema).default([]),
-      }),
-    )
-    .min(1),
+export const datasetCaseSchema = z.object({
+  id: z.string().regex(/^[a-z0-9_-]+$/),
+  repoPath: z.string(),
+  base: z.string(),
+  head: z.string(),
+  task: z.string(),
+  labels: z.array(
+    z.object({
+      id: z.string(),
+      description: z.string(),
+      path: z.string().optional(),
+      quote: z.string().optional(),
+    }),
+  ),
+  packs: z.array(packSchema).default([]),
+  kind: z.enum(['defect', 'clean']).default('defect'),
+  commitDate: z.string().min(1).optional(),
+  sourceRepository: z.string().min(1).optional(),
+  cloneUrl: z.string().min(1).optional(),
+  sourceCommit: z.string().min(1).optional(),
 });
+const datasetSchema = z
+  .object({
+    cases: z.array(datasetCaseSchema).min(1),
+  })
+  .refine(
+    (dataset) =>
+      dataset.cases.every((sample) => sample.kind !== 'clean' || sample.labels.length === 0),
+    'Clean cases must have zero labels.',
+  );
+export type DatasetCase = z.infer<typeof datasetCaseSchema>;
 export type Variant = 'baseline' | 'context' | 'packs';
 type BenchResult = {
   id: string;
   caseId: string;
+  kind: 'defect' | 'clean';
   variant: Variant;
   repeat: number;
   labels: { id: string; description: string }[];
@@ -98,25 +108,29 @@ export function baselinePacket(source: Snapshot, reference: ContextPacket): Cont
 export function assessAgainstLabels(
   findings: Finding[],
   labels: { id: string; description: string; path?: string; quote?: string }[],
+  kind: 'defect' | 'clean' = 'defect',
 ) {
-  const seeded = labels.some((label) => label.path || label.quote);
+  const autoReject = kind === 'clean' || labels.some((label) => label.path || label.quote);
   const used = new Set<string>();
   return findings
     .filter((finding) => finding.disposition === 'supported')
     .map((finding) => {
-      const match = labels.find((label) => {
-        if (used.has(label.id)) return false;
-        if (label.path && label.path !== finding.path) return false;
-        if (
-          label.quote &&
-          !finding.evidence.some(
-            (evidence) =>
-              evidence.quote.includes(label.quote!) || label.quote!.includes(evidence.quote),
-          )
-        )
-          return false;
-        return Boolean(label.path || label.quote);
-      });
+      const match =
+        kind === 'clean'
+          ? undefined
+          : labels.find((label) => {
+              if (used.has(label.id)) return false;
+              if (label.path && label.path !== finding.path) return false;
+              if (
+                label.quote &&
+                !finding.evidence.some(
+                  (evidence) =>
+                    evidence.quote.includes(label.quote!) || label.quote!.includes(evidence.quote),
+                )
+              )
+                return false;
+              return Boolean(label.path || label.quote);
+            });
       if (match) {
         used.add(match.id);
         return {
@@ -136,7 +150,7 @@ export function assessAgainstLabels(
         path: finding.path,
         startLine: finding.startLine,
         matchedLabelId: null,
-        verdict: seeded ? ('rejected' as const) : ('unassessed' as const),
+        verdict: autoReject ? ('rejected' as const) : ('unassessed' as const),
       };
     });
 }
@@ -210,6 +224,7 @@ export async function benchmark(options: {
         const result: BenchResult = {
           id: randomUUID(),
           caseId: sample.id,
+          kind: sample.kind,
           variant,
           repeat,
           labels: sample.labels,
@@ -304,7 +319,7 @@ export async function benchmark(options: {
               id: result.id,
               caseId: sample.id,
               expected: sample.labels,
-              findings: assessAgainstLabels(result.findings, sample.labels),
+              findings: assessAgainstLabels(result.findings, sample.labels, sample.kind),
             },
             null,
             2,
@@ -338,15 +353,24 @@ export async function scoreBenchmark(directory: string) {
     let tp = 0,
       fp = 0,
       fn = 0,
-      unassessed = 0;
+      unassessed = 0,
+      cleanRuns = 0,
+      cleanFalsePositiveRuns = 0;
     for (const result of rows) {
       if (result.error) continue;
+      const kind = result.kind ?? 'defect';
       const assessment = JSON.parse(
         await readFile(join(directory, `${result.id}.assessment.json`), 'utf8'),
       ) as { findings: { findingId: string; matchedLabelId: string | null; verdict: string }[] };
       const found = new Set<string>();
+      let cleanHasFinding = false;
       for (const finding of result.findings.filter((f) => f.disposition === 'supported')) {
         const review = assessment.findings.find((f) => f.findingId === finding.id);
+        if (kind === 'clean') {
+          fp++;
+          cleanHasFinding = true;
+          continue;
+        }
         if (
           review?.verdict === 'accepted' &&
           review.matchedLabelId &&
@@ -362,7 +386,10 @@ export async function scoreBenchmark(directory: string) {
           fp++;
         else unassessed++;
       }
-      fn += result.labels.length - found.size;
+      if (kind === 'clean') {
+        cleanRuns++;
+        if (cleanHasFinding) cleanFalsePositiveRuns++;
+      } else fn += result.labels.length - found.size;
     }
     summaries.push({
       variant,
@@ -371,6 +398,9 @@ export async function scoreBenchmark(directory: string) {
       unassessed,
       precision: unassessed ? null : tp + fp ? tp / (tp + fp) : null,
       recall: unassessed ? null : tp + fn ? tp / (tp + fn) : null,
+      falsePositiveRate: cleanRuns ? cleanFalsePositiveRuns / cleanRuns : null,
+      cleanRuns,
+      cleanFalsePositiveRuns,
       medianExplorationBytes: median(rows.map((r) => r.usage.readBytes)),
       medianEstimatedExplorationTokens: median(rows.map((r) => Math.ceil(r.usage.readBytes / 4))),
       medianTotalTokens: median(rows.map((r) => r.usage.inputTokens + r.usage.outputTokens)),
@@ -382,7 +412,7 @@ export async function scoreBenchmark(directory: string) {
     status: summaries.some((s) => s.unassessed || s.failures || !s.runs)
       ? 'incomplete'
       : 'assessed',
-    note: 'Exploration tokens are byte/4 estimates. Seeded path+quote labels can be auto-assessed; otherwise humans set blinded *.assessment.json verdicts. A small corpus is not a general model-quality claim.',
+    note: 'Exploration tokens are byte/4 estimates. Seeded path+quote labels can be auto-assessed; clean cases auto-reject every finding as a false positive; otherwise humans set blinded *.assessment.json verdicts. A small corpus is not a general model-quality claim.',
     summaries,
   };
   await writeFile(join(directory, 'report.json'), JSON.stringify(report, null, 2));

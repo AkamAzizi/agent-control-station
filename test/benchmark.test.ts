@@ -88,6 +88,73 @@ test('quality metrics require independent assessment and duplicate labels count 
     assert.equal(measured.precision, 0.5);
     assert.equal(measured.recall, 1);
     assert.equal(measured.medianEstimatedExplorationTokens, 20);
+    assert.equal(measured.falsePositiveRate, null);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('a finding on a clean case is a false positive and sets the false-positive rate', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'station-bench-clean-'));
+  const finding = {
+    id: 'spurious',
+    title: 'Imagined defect',
+    body: 'There is no defect on this docs-only change.',
+    severity: 'low',
+    path: 'README.md',
+    side: 'head',
+    startLine: 1,
+    endLine: 1,
+    evidence: [{ contextItemId: 'item', quote: 'docs' }],
+    disposition: 'supported',
+  };
+  try {
+    await writeFile(
+      join(dir, 'clean.result.json'),
+      JSON.stringify({
+        id: 'clean',
+        caseId: 'docs-only',
+        kind: 'clean',
+        variant: 'context',
+        repeat: 1,
+        labels: [],
+        contextId: 'context',
+        findings: [finding],
+        usage: { inputTokens: 10, outputTokens: 2, readBytes: 40, toolCalls: 1, cost: null },
+        compileMs: 1,
+        totalMs: 10,
+      }),
+    );
+    await writeFile(
+      join(dir, 'clean.assessment.json'),
+      JSON.stringify({
+        findings: [{ findingId: 'spurious', matchedLabelId: null, verdict: 'rejected' }],
+      }),
+    );
+    await writeFile(
+      join(dir, 'quiet.result.json'),
+      JSON.stringify({
+        id: 'quiet',
+        caseId: 'format-only',
+        kind: 'clean',
+        variant: 'context',
+        repeat: 1,
+        labels: [],
+        contextId: 'context',
+        findings: [],
+        usage: { inputTokens: 8, outputTokens: 1, readBytes: 20, toolCalls: 1, cost: null },
+        compileMs: 1,
+        totalMs: 8,
+      }),
+    );
+    await writeFile(join(dir, 'quiet.assessment.json'), JSON.stringify({ findings: [] }));
+    const report = await scoreBenchmark(dir);
+    const measured = report.summaries.find((s) => s.variant === 'context')!;
+    assert.equal(measured.precision, 0);
+    assert.equal(measured.recall, null);
+    assert.equal(measured.falsePositiveRate, 0.5);
+    assert.equal(measured.cleanRuns, 2);
+    assert.equal(measured.cleanFalsePositiveRuns, 1);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
