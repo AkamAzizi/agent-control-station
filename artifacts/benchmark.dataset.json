@@ -1,16 +1,15 @@
 {
   "summary": {
-    "defects": 25,
+    "defects": 23,
     "clean": 12,
-    "postCutoffDefects": 9,
+    "postCutoffDefects": 8,
     "filesChanged": {
       "defect": {
-        "count": 25,
-        "min": 1,
+        "count": 23,
+        "min": 2,
         "max": 19,
         "median": 6,
         "values": [
-          1,
           2,
           2,
           2,
@@ -23,7 +22,6 @@
           6,
           6,
           6,
-          7,
           8,
           9,
           9,
@@ -63,11 +61,11 @@
         "min": "2016-08-29T22:20:34+01:00",
         "max": "2026-09-04T10:48:10+03:00",
         "buckets": {
-          "2026-05+": 9,
           "2016-2018": 4,
           "2019-2021": 4,
-          "2022-2024": 4,
-          "2025-2026-04": 4
+          "2025-2026-04": 4,
+          "2026-05+": 8,
+          "2022-2024": 3
         }
       },
       "clean": {
@@ -75,13 +73,14 @@
         "max": "2026-09-09T08:59:30-07:00",
         "buckets": {
           "2026-05+": 4,
-          "2016-2018": 1,
-          "2019-2021": 2,
           "2022-2024": 3,
-          "2025-2026-04": 2
+          "2025-2026-04": 2,
+          "2019-2021": 2,
+          "2016-2018": 1
         }
       }
-    }
+    },
+    "note": "Removed graphql-graphql-js-defect-51bad915 and cheeriojs-cheerio-defect-e48f0224 as weak oracles before any evaluation run. Post-cutoff defect cases drop from 9 to 8."
   },
   "cases": [
     {
@@ -215,34 +214,6 @@
       "cloneUrl": "https://github.com/cheeriojs/cheerio.git",
       "sourceCommit": "ca00ea5cad068f535196d7bd53ef09017275fde4",
       "filesChanged": 5
-    },
-    {
-      "id": "cheeriojs-cheerio-defect-e48f0224",
-      "repoPath": "repos/cheeriojs-cheerio",
-      "base": "bcdc28e7f13e947b56bf5e51177364a52a6c1487",
-      "head": "98e41ae3fbc5e0b140eb9925caa6f8c9f96012f6",
-      "task": "Review this change for actionable correctness defects.",
-      "labels": [
-        {
-          "id": "website-docusaurus-config-js-1",
-          "description": "A later bug-fix replaced this line in website/docusaurus.config.js.",
-          "path": "website/docusaurus.config.js",
-          "quote": "membersWithOwnFile: ['Class', 'Enum', 'Interface'],"
-        },
-        {
-          "id": "website-docusaurus-config-js-2",
-          "description": "A later bug-fix replaced this line in website/docusaurus.config.js.",
-          "path": "website/docusaurus.config.js",
-          "quote": "propertyMembersFormat: 'htmlTable',"
-        }
-      ],
-      "packs": [],
-      "kind": "defect",
-      "commitDate": "2024-08-06T21:22:10+01:00",
-      "sourceRepository": "cheeriojs/cheerio",
-      "cloneUrl": "https://github.com/cheeriojs/cheerio.git",
-      "sourceCommit": "e48f02246dd2d408e31c07c81a75e8e1b24ab422",
-      "filesChanged": 7
     },
     {
       "id": "colinhacks-zod-clean-195e8696",
@@ -404,28 +375,6 @@
       "cloneUrl": "https://github.com/graphql/graphql-js.git",
       "sourceCommit": "3b9d3d4bc1d8c384569e002b51b92119aa1c4500",
       "filesChanged": 2
-    },
-    {
-      "id": "graphql-graphql-js-defect-51bad915",
-      "repoPath": "repos/graphql-graphql-js",
-      "base": "99c4e2b3519fc36c40fde0ce721ea417b5b6a44c",
-      "head": "a7410f3e9d7184c62baa2444f2ea7f9e398075a8",
-      "task": "Review this change for actionable correctness defects.",
-      "labels": [
-        {
-          "id": "src-diagnostics-ts-1",
-          "description": "A later bug-fix replaced this line in src/diagnostics.ts.",
-          "path": "src/diagnostics.ts",
-          "quote": "/** Context published on `graphql:execute:variableCoercion`. */"
-        }
-      ],
-      "packs": [],
-      "kind": "defect",
-      "commitDate": "2026-06-02T23:58:33+03:00",
-      "sourceRepository": "graphql/graphql-js",
-      "cloneUrl": "https://github.com/graphql/graphql-js.git",
-      "sourceCommit": "51bad9157214dc48bae15a5db9566a7f0db70cae",
-      "filesChanged": 1
     },
     {
       "id": "graphql-graphql-js-defect-5cefc677",
