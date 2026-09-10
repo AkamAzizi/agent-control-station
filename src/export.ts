@@ -51,6 +51,17 @@ export function exportMarkdown(
     `Reported cost: ${run.usage.cost === null ? 'unavailable' : run.usage.cost}`,
     '',
   );
+  const policy = context?.manifest.policy;
+  if (policy)
+    lines.push(
+      '## Worker budgets',
+      '',
+      `Tool-call ceiling: ${policy.maxToolCalls}`,
+      `Deadline: ${policy.timeoutMs}ms`,
+      `Context size: ${policy.maxBytes} bytes`,
+      `Tool calls used: ${run.usage.toolCalls}`,
+      '',
+    );
   if (feedback.length)
     lines.push(
       '## Operator feedback',

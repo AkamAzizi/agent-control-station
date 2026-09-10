@@ -6,6 +6,8 @@ CodeRabbit, Greptile, and Cursor BugBot also review pull requests. This station 
 
 This pilot supports TypeScript/JavaScript repositories, four concurrent review workers, local feedback and Markdown/JSON exports. Pi runs make requests to the selected model provider. The explicitly labelled demo is deterministic and makes no model calls.
 
+[What a review looks like.](examples/review-demo.md)
+
 ## Run locally
 
 Requirements: Node.js 24 or newer, Git, and pnpm (the repository pins pnpm 12.3.4).
