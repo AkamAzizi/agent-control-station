@@ -131,7 +131,11 @@ pnpm cli benchmark-score --out /tmp/station-benchmark
 
 `report.json` includes precision/recall, failures, unassessed findings, exploration-byte/token estimates, total model tokens, compilation time and total time, plus `report.svg`. Raw traces and all verifier dispositions remain available.
 
+### These seeded-fixture numbers measure the pipeline, not review quality
+
 The committed [docs/benchmark/report.json](docs/benchmark/report.json) and [graph](docs/benchmark/report.svg) were produced by the **fixture reviewer on the three seeded cases** (one repeat each). In that harness run, context/packs median exploration was 290 bytes against a 450-byte baseline, with precision and recall both 1.0 because every seeded quote was recovered. That is not a model-quality result and not a claim about unseen repositories. The pilot target for a later paid study remains a 25% reduction in median exploration with no measured precision/recall regression. No effectiveness claim is made before independent assessments and a sufficiently representative dataset exist.
+
+A real evaluation is in progress.
 
 ## Development and verification
 
