@@ -1,6 +1,8 @@
 # Agent Control Station
 
-A local control station for scoped coding-agent reviews, with deterministic upfront context and an auditable record of every code read.
+A finding is rejected if its evidence quote does not verify against the file it cites. Every worker runs under hard budgets (tool-call ceiling, deadline, context size), with read-only scoped tools and a local audit trail.
+
+CodeRabbit, Greptile, and Cursor BugBot also review pull requests. This station differs by pinning a Git diff, compiling the excerpts a worker may read, and rejecting any finding whose quote is not an exact substring of the cited file.
 
 This pilot supports TypeScript/JavaScript repositories, four concurrent review workers, local feedback and Markdown/JSON exports. Pi runs make requests to the selected model provider. The explicitly labelled demo is deterministic and makes no model calls.
 
