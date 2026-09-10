@@ -113,6 +113,17 @@ function isDepPath(path: string): boolean {
   return LOCK_FILE.test(path) || PACKAGE_JSON.test(path);
 }
 
+function isCodePath(path: string): boolean {
+  return CODE_RE.test(path) && !SKIP_PATH.test(path);
+}
+
+function isFormattingMessage(subject: string): boolean {
+  return (
+    /^style(\([^)]+\))?(!)?:\s+\S/i.test(subject.trim()) ||
+    /\b(prettier|whitespace|formatting)\b/i.test(subject)
+  );
+}
+
 function parseRemovedCodeLines(diff: string): { path: string; quote: string }[] {
   const found: { path: string; quote: string }[] = [];
   const seen = new Set<string>();
@@ -288,7 +299,18 @@ export async function mineFixCommit(
   const parents = await parentsOf(repoPath, commit);
   const head = parents[0];
   if (!head) return null;
-  const diff = await git(repoPath, ['diff', '--unified=0', '--no-renames', `${commit}^1`, commit]);
+  const fixFiles = await changedPaths(repoPath, `${commit}^1`, commit);
+  const codeFiles = fixFiles.filter(isCodePath);
+  if (!codeFiles.length || fixFiles.length > 20) return null;
+  const diff = await git(repoPath, [
+    'diff',
+    '--unified=0',
+    '--no-renames',
+    `${commit}^1`,
+    commit,
+    '--',
+    ...codeFiles,
+  ]);
   const removed = parseRemovedCodeLines(diff);
   if (!removed.length) return null;
   const base = await chooseBase(repoPath, head, removed);
@@ -341,14 +363,14 @@ export async function mineCleanCommit(
   if (!files.length || files.length > 20) return null;
   const docsOnly = files.every(isDocPath);
   const depsOnly = files.every(isDepPath);
-  const formattingOnly = await diffIsWhitespaceOnly(repoPath, base, commit);
-  if (!docsOnly && !depsOnly && !formattingOnly) return null;
+  const subject = await commitSubject(repoPath, commit);
+  if (!docsOnly && !depsOnly) {
+    if (!isFormattingMessage(subject) && !isCleanCommitMessage(subject)) return null;
+    if (!(await diffIsWhitespaceOnly(repoPath, base, commit))) return null;
+  }
   if (depsOnly) {
     const diff = await git(repoPath, ['diff', base, commit]);
-    if (
-      !/"((dev|peer|optional)?[Dd]ependencies)"/.test(diff) &&
-      !isCleanCommitMessage(await commitSubject(repoPath, commit))
-    )
+    if (!/"((dev|peer|optional)?[Dd]ependencies)"/.test(diff) && !isCleanCommitMessage(subject))
       return null;
   }
   return buildCase(
@@ -415,9 +437,13 @@ export async function ensureClone(cloneUrl: string, directory: string): Promise<
   await mkdir(join(directory, '..'), { recursive: true });
   try {
     await access(join(directory, '.git'));
-    await git(directory, ['fetch', '--filter=blob:none', 'origin']);
+    try {
+      await git(directory, ['fetch', '--no-filter', 'origin']);
+    } catch {
+      await git(directory, ['fetch', 'origin']);
+    }
   } catch {
-    await exec('git', ['clone', '--filter=blob:none', cloneUrl, directory], {
+    await exec('git', ['clone', '--single-branch', '--no-tags', cloneUrl, directory], {
       encoding: 'utf8',
       env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
     });
@@ -439,6 +465,10 @@ export async function mineRepository(options: {
   const defectLimit = options.maxDefects ?? 4;
   const cleanLimit = options.maxClean ?? 2;
   const extra = options.extraFixCommits ?? [];
+  let defectAttempts = 0;
+  let cleanAttempts = 0;
+  const maxDefectAttempts = defectLimit * 25;
+  const maxCleanAttempts = 800;
   for (const sha of extra) {
     if (cases.filter((sample) => sample.kind === 'defect').length >= defectLimit) break;
     const mined = await mineFixCommit(options.repoPath, sha, {
@@ -451,11 +481,17 @@ export async function mineRepository(options: {
     const defects = cases.filter((sample) => sample.kind === 'defect').length;
     const cleans = cases.filter((sample) => sample.kind === 'clean').length;
     if (defects >= defectLimit && cleans >= cleanLimit) break;
-    if (defects < defectLimit && isConventionalFixMessage(commit.subject)) {
+    if (
+      defects < defectLimit &&
+      defectAttempts < maxDefectAttempts &&
+      isConventionalFixMessage(commit.subject)
+    ) {
+      defectAttempts++;
       const mined = await mineFixCommit(options.repoPath, commit.sha, mineOptions);
       if (mined && !cases.some((sample) => sample.id === mined.id)) cases.push(mined);
     }
-    if (cleans < cleanLimit) {
+    if (cleans < cleanLimit && cleanAttempts < maxCleanAttempts) {
+      cleanAttempts++;
       const mined = await mineCleanCommit(options.repoPath, commit.sha, mineOptions);
       if (mined && !cases.some((sample) => sample.sourceCommit === mined.sourceCommit))
         cases.push(mined);
@@ -499,6 +535,9 @@ export async function mineHeldOutDataset(options: {
       maxDefects: options.maxDefectsPerRepo ?? 4,
       maxClean: options.maxCleanPerRepo ?? 2,
     });
+    console.error(
+      `  ${repository}: ${mined.filter((sample) => sample.kind === 'defect').length} defect, ${mined.filter((sample) => sample.kind === 'clean').length} clean`,
+    );
     for (const sample of mined) {
       const defects = cases.filter((row) => row.kind === 'defect').length;
       const cleans = cases.filter((row) => row.kind === 'clean').length;
