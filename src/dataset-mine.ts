@@ -117,6 +117,14 @@ function isCodePath(path: string): boolean {
   return CODE_RE.test(path) && !SKIP_PATH.test(path);
 }
 
+function isReviewableDefectPath(path: string): boolean {
+  if (!isCodePath(path)) return false;
+  if (/\.(?:test|spec)\./i.test(path)) return false;
+  if (/(?:^|\/)(?:examples?|benchmarks?|__tests__|tests|test|spec)(?:\/|$)/i.test(path))
+    return false;
+  return true;
+}
+
 function isFormattingMessage(subject: string): boolean {
   return (
     /^style(\([^)]+\))?(!)?:\s+\S/i.test(subject.trim()) ||
@@ -146,7 +154,7 @@ function parseRemovedCodeLines(diff: string): { path: string; quote: string }[] 
       path = next && next === (oldPath || next) ? next : '';
       continue;
     }
-    if (!path || !CODE_RE.test(path) || SKIP_PATH.test(path)) continue;
+    if (!path || !isReviewableDefectPath(path)) continue;
     if (!line.startsWith('-') || line.startsWith('---')) continue;
     const quote = line.slice(1).trim();
     if (quote.length < 8 || quote.length > 200) continue;
@@ -318,7 +326,7 @@ export async function mineFixCommit(
     if (!head) return null;
     if (!(await ensureCommit(repoPath, head))) return null;
     const fixFiles = await changedPaths(repoPath, `${commit}^1`, commit);
-    const codeFiles = fixFiles.filter(isCodePath);
+    const codeFiles = fixFiles.filter(isReviewableDefectPath);
     if (!codeFiles.length || fixFiles.length > 20) return null;
     const diff = await git(repoPath, [
       'diff',
