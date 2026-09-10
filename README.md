@@ -64,7 +64,7 @@ Data lives in `.station/`, which is ignored by Git. Override with `STATION_DATA`
 4. Run a fresh finding verifier against the original findings and captured evidence.
 5. Save all dispositions, usage, read traces, operator feedback and exportable results.
 
-Each worker has a ten-minute deadline and a forty-tool-call ceiling. The upfront context default is 96 KiB, including at most 8 KiB of matching judgment packs. Token counts for context size and exploration are estimates; provider-reported usage is recorded separately. Unknown cost is displayed as unavailable.
+Each worker has a ten-minute deadline and a forty-tool-call ceiling. The upfront context default is 768 KiB, including at most 8 KiB of matching judgment packs. Token counts for context size and exploration are estimates; provider-reported usage is recorded separately. Unknown cost is displayed as unavailable.
 
 Cancellation releases a worker slot. An interrupted daemon marks unfinished attempts as interrupted. Retry creates a new attempt using the original Git snapshot and captured pack versions, even if branches or active packs have since changed. To change scope or budget, create a new review.
 

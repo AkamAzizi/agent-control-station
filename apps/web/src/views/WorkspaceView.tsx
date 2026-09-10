@@ -23,15 +23,16 @@ import {
   ShieldCheck,
   X,
 } from 'lucide-react';
-import type {
-  ContextItem,
-  ContextPacket,
-  Feedback,
-  Finding,
-  JudgmentPack,
-  ReviewRequest,
-  Run,
-  RunEvent,
+import {
+  DEFAULT_POLICY,
+  type ContextItem,
+  type ContextPacket,
+  type Feedback,
+  type Finding,
+  type JudgmentPack,
+  type ReviewRequest,
+  type Run,
+  type RunEvent,
 } from '../../../../src/types';
 import {
   api,
@@ -834,7 +835,12 @@ function ContextAdjustForm({
 }) {
   const [scope, setScope] = useState((run.request.scopePaths ?? []).join(', '));
   const [maxBytesKiB, setMaxBytesKiB] = useState(
-    String(Math.max(96, Math.round((run.request.policy?.maxBytes ?? 96 * 1024) / 1024))),
+    String(
+      Math.max(
+        DEFAULT_POLICY.maxBytes / 1024,
+        Math.round((run.request.policy?.maxBytes ?? DEFAULT_POLICY.maxBytes) / 1024),
+      ),
+    ),
   );
   const [saving, setSaving] = useState(false);
   const submit = async (event: FormEvent) => {
